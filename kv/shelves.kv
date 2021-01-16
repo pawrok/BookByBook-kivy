@@ -1,0 +1,40 @@
+#:kivy 1.9.0
+
+<ShelfItem>:
+    # height: '90sp'
+    # size_hint_y: None
+    canvas:
+        Color:
+            rgb: .3, .4, .9
+        Rectangle:
+            pos: self.pos
+            size: self.width, 1
+    # width: '90sp'
+
+    BoxLayout:
+        orientation: 'horizontal'
+        padding: '5dp'
+
+        Button:
+            text: root.shelf_title
+            # size_hint_x: None
+            # width: self.height
+            # on_release: app.edit_note(root.note_index)
+
+RootWidget:
+    container: container
+    ShelfWidget:
+        RecycleView:
+            id: container
+            data: app.shelf_store.data_for_widgets
+            viewclass: 'ShelfItem'
+            RecycleBoxLayout:
+                col_default_width: self.width / 3
+                # default_size: None, dp(56)
+                default_size_hint: 1, None
+                size_hint_y: None
+                # height: '180sp'
+                # width: '90sp'
+                orientation: 'vertical'
+                spacing: dp(2)
+
