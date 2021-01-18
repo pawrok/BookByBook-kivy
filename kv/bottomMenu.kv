@@ -1,0 +1,42 @@
+#:kivy 1.9
+
+RootWidget:
+    container2: container2
+    BoxLayout:
+        id: container2
+        orientation: 'horizontal'
+        size_hint_y: None
+        height: '48dp'
+        padding: '5dp'
+        canvas:
+            Color:
+                rgb: .3, .3, .3
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Button:
+            text: 'Home'
+            width: self.height
+            # on_release: app.go_notes()
+
+        Button:
+            text: 'Stats'
+            width: self.height
+            # on_release: app.go_notes()
+
+        Button:
+            text: '+'
+            width: self.height
+            # on_release: app.go_notes()
+
+        Button:
+            text: 'Wishlist'
+            width: self.height
+            # on_release: app.go_notes()
+
+        Button:
+            text: 'Settings'
+            # size_hint_x: None
+            width: self.height
+            # on_release: app.go_notes()
