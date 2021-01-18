@@ -1,9 +1,8 @@
 #:kivy 1.9
 
 RootWidget:
-    container2: container2
     BoxLayout:
-        id: container2
+        id: bottommenu
         orientation: 'horizontal'
         size_hint_y: None
         height: '48dp'
@@ -28,7 +27,7 @@ RootWidget:
         Button:
             text: '+'
             width: self.height
-            # on_release: app.go_notes()
+            on_release: app.create_newbookmenu()
 
         Button:
             text: 'Wishlist'
@@ -37,6 +36,5 @@ RootWidget:
 
         Button:
             text: 'Settings'
-            # size_hint_x: None
             width: self.height
             # on_release: app.go_notes()
