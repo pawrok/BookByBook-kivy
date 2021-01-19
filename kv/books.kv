@@ -22,15 +22,19 @@
             text: root.book_title
 
 RootWidget:
-    BookWidget:
-        RecycleView:
-            id: uppermenu
-            data: app.book_store.data_for_widgets
-            viewclass: 'BookItem'
-            RecycleGridLayout:
-                cols: 3
-                col_default_width: self.width / 3
-                default_size_hint: 1, None
-                size_hint_y: None
-                spacing: dp(2)
+    HomeWidget:
+        id: middle
+        BoxLayout:
+            id: home_content
+            BookWidget:
+                RecycleView:
+                    id: uppermenu
+                    data: app.book_store.data_for_widgets
+                    viewclass: 'BookItem'
+                    RecycleGridLayout:
+                        cols: 3
+                        col_default_width: self.width / 3
+                        default_size_hint: 1, None
+                        size_hint_y: None
+                        spacing: dp(2)
 

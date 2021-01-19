@@ -1,67 +1,66 @@
 #:kivy 1.9
 RootWidget:
-    upper_container: uppermenu
-    bottom_container: bottommenu
-    home_container: home
+    # upper_container: uppermenu.__self__
+    # home_content: home_contentx.__self__
+    middle_container: middle
+    # BoxLayout:
+    size: root.width, root.height
+    orientation: 'vertical'
+
     BoxLayout:
-        size: root.width, root.height
+        id: top_panel
+        canvas:
+            Color:
+                rgb: .7, .3, .3
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        size_hint_y: 0.1
+        Label:
+            text: "Bookcase App"
+
+    HomeWidget:
+        id: middle
         orientation: 'vertical'
 
-        BoxLayout:
-            id: home
-            orientation: 'vertical'
-            
-            BoxLayout:
-                canvas:
-                    Color:
-                        rgb: .7, .3, .3
-                    Rectangle:
-                        pos: self.pos
-                        size: self.size
-                size_hint_y: 0.1
-                Label:
-                    text: "Bookcase App"
+        Label:
+            text: "middle_container not loaded"
 
-            GridLayout:
-                size_hint_y: 0.1
-                cols:3
-                Button:
-                    text: "Books"
-                    on_release: app.next_screen('books')
-                Button:
-                    text: "Shelves"
-                    on_release: app.next_screen('shelves')
-                Button:
-                    text: "Tags"
-                    on_release: app.next_screen('tags')
+    BoxLayout:
+        # container for home, stats, addnote, wish, settings
+        id: bottommenu
+        orientation: 'horizontal'
+        size_hint_y: None
+        height: '48dp'
+        padding: '5dp'
+        canvas:
+            Color:
+                rgb: .3, .3, .3
+            Rectangle:
+                pos: self.pos
+                size: self.size
 
-            BoxLayout:
-                orientation: 'horizontal'
-                size_hint_y: 0.1
-                TextInput:
-                    multiline: False
-                    size_hint_x: 0.8
-                Button:
-                    text: "Sort"
-                    size_hint_x: None
+        Button:
+            text: 'Home'
+            width: self.height
+            on_release: app.create_home()
 
-            BoxLayout:
-                # container for Books, shelves, tags content
-                id: uppermenu
-                Label:
-                    text: "Hello"
+        Button:
+            text: 'Stats'
+            width: self.height
+            # on_release: app.go_notes()
 
-        BoxLayout:
-            # container for home, stats, addnote, wish, settings
-            id: bottommenu
-            orientation: 'horizontal'
-            size_hint_y: None
-            height: '48dp'
-            canvas:
-                Color:
-                    rgb: .9, .3, .3
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
-            Label:
-                text: "not loaded correctly"
+        Button:
+            text: '+'
+            width: self.height
+            on_release: app.create_newbookmenu()
+
+        Button:
+            text: 'Wishlist'
+            width: self.height
+            # on_release: app.go_notes()
+
+        Button:
+            text: 'Settings'
+            width: self.height
+            # on_release: app.go_notes()

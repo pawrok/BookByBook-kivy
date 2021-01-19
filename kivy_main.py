@@ -22,9 +22,13 @@ class ShelfItem(BoxLayout):
 
 
 class RootWidget(BoxLayout):
-    upper_container = ObjectProperty(None)
-    bottom_container = ObjectProperty(None)
-    home_container = ObjectProperty(None)
+    # upper_container = ObjectProperty(None)
+    # bottom_container = ObjectProperty(None)
+    middle_container = ObjectProperty(None)
+
+
+class HomeWidget(BoxLayout):
+    home_content = ObjectProperty(None)
 
 
 class BookWidget(BoxLayout):
@@ -48,27 +52,28 @@ class BookcaseApp(App):
         self.shelf_store = ShelfWidget()
         self.load_shelves()
         self.root = Builder.load_file('kv/root.kv')
-        self.create_bottommenu()
 
-    def next_screen(self, screen):
-        filename = screen + '.kv'
-        Builder.unload_file('kv/' + filename)
-        self.root.upper_container.clear_widgets()
-        screen = Builder.load_file('kv/' + filename)
-        self.root.upper_container.add_widget(screen)
-
-    # TODO: create one method for bottom two ones
-    def create_bottommenu(self):
-        Builder.unload_file('kv/root.kv')
-        self.root.bottom_container.clear_widgets()
-        screen = Builder.load_file('kv/bottomMenu.kv')
-        self.root.bottom_container.add_widget(screen)
+        self.create_home()
+        # self.next_screen('books')
 
     def create_newbookmenu(self):
-        Builder.unload_file('kv/root.kv')
-        self.root.home_container.clear_widgets()
+        # Builder.unload_file('kv/root.kv')
+        self.root.middle_container.clear_widgets()
         screen = Builder.load_file('kv/addBook.kv')
-        self.root.home_container.add_widget(screen)
+        self.root.middle_container.add_widget(screen)
+
+    def create_home(self):
+        Builder.unload_file('kv/root.kv')   # is this necessary?
+        self.root.middle_container.clear_widgets()
+        screen = Builder.load_file('kv/home.kv')
+        self.root.middle_container.add_widget(screen)
+    
+    def next_screen(self, screen):
+        filename = screen + '.kv'
+        # Builder.unload_file('kv/' + filename)
+        self.root.middle_container.home_content.clear_widgets()
+        screen = Builder.load_file('kv/' + filename)
+        self.root.middle_container.add_widget(screen)
 
     def load_books(self):
         data = [{
