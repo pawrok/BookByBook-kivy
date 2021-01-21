@@ -1,12 +1,7 @@
 #:kivy 1.9
-RootWidget:
-    # upper_container: uppermenu.__self__
-    # home_content: home_contentx.__self__
-    middle_container: middle
-    # BoxLayout:
-    size: root.width, root.height
-    orientation: 'vertical'
 
+<RootRoot>:
+    orientation: 'vertical'
     BoxLayout:
         id: top_panel
         canvas:
@@ -15,19 +10,14 @@ RootWidget:
             Rectangle:
                 pos: self.pos
                 size: self.size
-        size_hint_y: 0.1
+        size_hint_y: 0.07
         Label:
             text: "Bookcase App"
 
-    HomeWidget:
-        id: middle
-        orientation: 'vertical'
-
-        Label:
-            text: "middle_container not loaded"
+    RootScreenManager:
+        id: rootmanager
 
     BoxLayout:
-        # container for home, stats, addnote, wish, settings
         id: bottommenu
         orientation: 'horizontal'
         size_hint_y: None
@@ -43,24 +33,262 @@ RootWidget:
         Button:
             text: 'Home'
             width: self.height
-            on_release: app.create_home()
+            on_release: rootmanager.current = 'home'
 
         Button:
             text: 'Stats'
             width: self.height
-            # on_release: app.go_notes()
+            on_release: rootmanager.current = 'stats'
 
         Button:
             text: '+'
             width: self.height
-            on_release: app.create_newbookmenu()
+            on_release: rootmanager.current = 'new'
 
         Button:
             text: 'Wishlist'
             width: self.height
-            # on_release: app.go_notes()
+            on_release: rootmanager.current = 'wish'
 
         Button:
             text: 'Settings'
             width: self.height
-            # on_release: app.go_notes()
+            on_release: rootmanager.current = 'settings'
+
+
+<RootScreenManager>:
+    id: rootmanager
+    size: root.width, root.height
+    HomeScreen:
+    StatsScreen:
+    AddScreen:
+    WishScreen:
+    SettingsScreen:
+
+<HomeScreen>:
+    name: "home"
+    BoxLayout:
+        canvas:
+            Color:
+                rgb: .2, .7, .3
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        orientation: 'vertical'
+        
+        BoxLayout:
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Button:
+                text: 'books'
+                on_press: middlemanager.current = 'book'
+            Button:
+                text: 'shelves'
+                on_press: middlemanager.current = 'shelf'
+            Button:
+                text: 'tags'
+                on_press: middlemanager.current = 'tag'
+
+        BoxLayout:
+            size_hint_y: 0.1
+            TextInput:
+                multiline: False
+                size_hint_x: 0.8
+            Button:
+                text: "Sort"
+                size_hint_x: None
+
+        MiddleScreenManager:
+            id: middlemanager
+
+<AddScreen>:
+    name: 'new'
+    BoxLayout:
+        canvas:
+            Color:
+                rgb: .1, .3, .3
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        BoxLayout:
+            orientation: 'vertical'
+            BoxLayout:
+                id: topaddbook
+                orientation: 'horizontal'
+                size_hint_y: 0.35
+                Button:
+                    text: 'add'
+                    # on_press: root.parent.current = 'home'
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'gwiazdki'
+                    Button:
+                        text: 'read'
+                        # on_press:
+                Button:
+                    text: 'serduszko'
+
+            BoxLayout:
+                orientation: 'vertical'
+                id: titleauthorstuff
+                TextInput:
+                    text: "Title"
+                    size_hint_y: 0.15
+                TextInput:
+                    text: "author"
+                    size_hint_y: 0.15
+                TextInput:
+                    text: "shelf"
+                    size_hint_y: 0.15
+                TextInput:
+                    text: "langage"
+                    size_hint_y: 0.15
+                TextInput:
+                    size_hint_y: 0.15
+                    text: "pages"
+
+                TextInput:
+                    size_hint_y: None
+                    text: "description"
+            Button:
+                background_normal: ''
+                background_color: 1, .3, .4, .85
+                size_hint_y: 0.15
+                text: 'click to add to db'
+
+<StatsScreen>:
+    name: "stats"
+    BoxLayout:
+        orientation: 'vertical'
+        canvas:
+            Color:
+                rgb: .2, .7, .5
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+<WishScreen>:
+    name: "wish"
+    BoxLayout:
+        canvas:
+            Color:
+                rgb: .3, .2, .5
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+<SettingsScreen>:
+    name: "settings"
+    BoxLayout:
+        canvas:
+            Color:
+                rgb: .1, .7, .5
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+
+
+# --------------------------------------------------------------- #
+# home screens
+
+<MiddleScreenManager>:
+    id: middlemanager
+    Books:
+    Shelves:
+    Tags:
+
+<Books>:
+    name: 'book'
+    canvas:
+        Color:
+            rgb: .1, .3, .9
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    BookViewer:
+        # data: app.data
+        # spacing: 800
+        # padding: 300, 300
+        viewclass: 'BookItem'
+        # space_x: self.size[0]/3
+        # orientation: "vertical"
+        RecycleGridLayout:
+            cols: 3
+            default_size: dp(100), dp(140)
+            # col_default_width: self.width / 4
+            # default_size_hint: None, None
+            # size_hint_y: None
+            # spacing: dp(2)
+            default_size_hint: 1, None
+            size_hint_y: None
+            height: self.minimum_height
+
+<Shelves>:
+    name: 'shelf'
+    canvas:
+        Color:
+            rgb: .1, .3, .9
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    ShelfViewer:
+        # data: app.data
+        # spacing: 800
+        # padding: 300, 300
+        viewclass: 'ShelfItem'
+        # space_x: self.size[0]/3
+        # orientation: "vertical"
+        RecycleBoxLayout:
+            orientation: "vertical"
+            default_size: dp(100), dp(50)
+            # col_default_width: self.width / 4
+            # default_size_hint: None, None
+            # size_hint_y: None
+            # spacing: dp(2)
+            default_size_hint: 1, None
+            size_hint_y: None
+            height: self.minimum_height
+
+<Tags>:
+    name: 'tag'
+    canvas:
+        Color:
+            rgb: .7, .8, .5
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    Label:
+        text: "tag screen"
+
+
+# --------------------------------------------- #
+# widgets for MiddleScreenManager
+
+<BookItem>:
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '10dp'
+
+        Button:
+            text: 'image here'
+            # size_hint_x: None
+            # width: self.height
+            # on_release: app.edit_note(root.note_index)
+
+        Label:
+            size_hint_y: 0.2
+            text: root.book_title
+
+<ShelfItem>:
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '5dp'
+
+        Button:
+            size_hint_y: 0.2
+            text: root.shelf_title
