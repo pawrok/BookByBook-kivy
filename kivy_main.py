@@ -1,14 +1,20 @@
+from sqliteDB import SqliteDB
+
+from kivy.uix.label import Label
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
+from kivy.graphics import Color, Rectangle, Canvas, ClearBuffers, ClearColor
+from kivy.uix.scrollview import ScrollView
 from kivy.uix.recycleview import RecycleView 
 from kivy.properties import ListProperty, StringProperty, ObjectProperty, \
         NumericProperty, BooleanProperty, AliasProperty
 from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
+from kivy.config import Config
 
 import kivy
 
-from kivy.config import Config
 Config.set('graphics', 'width', '400')
 Config.set('graphics', 'height', '650')
 
@@ -16,6 +22,19 @@ kivy.require('1.9.0')
 
 class RootRoot(BoxLayout):
     pass
+
+class ShelfViewer(RecycleView): 
+    def __init__(self, **kwargs): 
+        super(ShelfViewer, self).__init__(**kwargs) 
+        self.data = [{
+            'shelf_title': 'title1'},
+            {
+            'shelf_title': 'title2'},
+            {
+            'shelf_title': 'title3'},
+            {
+            'shelf_title': 'title4'
+            }]
 
 class RootScreenManager(ScreenManager):
     pass
@@ -47,84 +66,36 @@ class Shelves(Screen):
 class Tags(Screen):
     pass
 
+class GridLayoutTest(GridLayout):
+    pass
+
 class BookItem(BoxLayout):
-    book_title = StringProperty()
+    title = StringProperty()
 
 class ShelfItem(BoxLayout):
     shelf_title = StringProperty()
 
-class BookWidget(BoxLayout):
-    data = ListProperty()
-    def _get_data_for_widgets(self):
-        return self.data
-    data_for_widgets = AliasProperty(_get_data_for_widgets, bind=['data'])
-
-class BookViewer(RecycleView): 
+class BookScrollView(ScrollView):
     def __init__(self, **kwargs): 
-        super(BookViewer, self).__init__(**kwargs) 
-        self.data = [{
-            'book_index': 1,
-            'book_content': 'contentxxx',
-            'book_title': 'title1'},
-            {'book_index': 2,
-            'book_content': 'contentxxx',
-            'book_title': 'title2'},
-            {'book_index': 3,
-            'book_content': 'contentxxx',
-            'book_title': 'title3'},
-            {'book_index': 4,
-            'book_content': 'contentxxx',
-            'book_title': 'title4'
-            }]
+        super(BookScrollView, self).__init__(**kwargs) 
+        self.data = SqliteDB.get_books_fromDB()
+        #[{'ID': 2, 'title': 'title1'}, {'ID': 1, 'title': 'title2'}, {'ID': 1, 'title': 'title2'}, {'ID': 1, 'title': 'title2'}, {'ID': 1, 'title': 'title2'}]
 
-class ShelfViewer(RecycleView): 
-    def __init__(self, **kwargs): 
-        super(ShelfViewer, self).__init__(**kwargs) 
-        self.data = [{
-            'shelf_title': 'title1'},
-            {
-            'shelf_title': 'title2'},
-            {
-            'shelf_title': 'title3'},
-            {
-            'shelf_title': 'title4'
-            }]
+        layout = GridLayout(cols=3, spacing=15, size_hint_y=None, col_default_width = self.width / 3)
+        for item in self.data:
+            book = BookItem(title=item['title'])
+            layout.add_widget(book)
+        self.add_widget(layout)
 
 
 class BookcaseApp(App):
     def build(self):
-        # self.book_store = BookWidget()
-        # self.book_store2 = BookWidget()
-        self.data = self.load_books()
-        # self.shelf_store = ShelfWidget()
-        # self.load_shelves()
+        SqliteDB()
         Builder.load_file('kv/root.kv')
         return RootRoot()
 
-
-
-    def load_books(self):
-        return  [{
-            'book_index': 1,
-            'book_content': 'contentxxx',
-            'book_title': 'title1'},
-            {'book_index': 2,
-            'book_content': 'contentxxx',
-            'book_title': 'title2'},
-            {'book_index': 3,
-            'book_content': 'contentxxx',
-            'book_title': 'title3'},
-            {'book_index': 4,
-            'book_content': 'contentxxx',
-            'book_title': 'title4'
-            }]
-        # self.book_store.data = data
-        # self.book_store2.data = data
-
-    def load_shelves(self):
-        data = [{
-            'shelf_title': 'random shelf'}]
-        self.shelf_store.data = data
+    def add_book_to_db(self, input_title, input_author):
+        SqliteDB.add_book_toDB(5, input_title, input_author)
 
 
 if __name__ == '__main__':
