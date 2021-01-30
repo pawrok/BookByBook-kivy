@@ -1,4 +1,4 @@
-#:kivy 1.9
+#:kivy 2.0
 
 <RootRoot>:
     orientation: 'vertical'
@@ -33,7 +33,10 @@
         Button:
             text: 'Home'
             width: self.height
-            on_release: rootmanager.current = 'home'
+            on_release:
+                # rootmanager.clear_widgets()
+                app.add_home_screen()
+                rootmanager.current = 'home'
 
         Button:
             text: 'Stats'
@@ -58,8 +61,10 @@
 
 <RootScreenManager>:
     id: rootmanager
+    home_screen: home_screen.__self__
     size: root.width, root.height
     HomeScreen:
+        id: home_screen
     StatsScreen:
     AddScreen:
     WishScreen:
@@ -67,10 +72,11 @@
 
 <HomeScreen>:
     name: "home"
+    id: home_screen
     BoxLayout:
         canvas:
             Color:
-                rgb: .2, .7, .3
+                rgb: 0.3, 0.3, 0.3
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -102,63 +108,117 @@
             id: middlemanager
 
 <AddScreen>:
+    # TODO
     name: 'new'
     BoxLayout:
+        # padding: '10dp', '0dp'
         canvas:
             Color:
-                rgb: .1, .3, .3
+                rgb: 0.3, 0.3, 0.3
             Rectangle:
                 pos: self.pos
                 size: self.size
         BoxLayout:
             orientation: 'vertical'
             BoxLayout:
+                padding: '5dp', '5dp'
                 id: topaddbook
                 orientation: 'horizontal'
-                size_hint_y: 0.35
+                size_hint_y: 0.37
                 Button:
-                    text: 'add'
-                    # on_press: root.parent.current = 'home'
+                    background_normal: ''
+                    background_color: 1, .9, .9, .99
+                    text: 'add image'
+                    size_hint_x: 0.33
                 BoxLayout:
+                    padding: '5dp', '5dp'
+                    size_hint_x: 0.34
                     orientation: 'vertical'
-                    Label:
-                        text: 'gwiazdki'
+                    StarsButton:
+                        id: stars_rating
+                        # size_hint_x: 0.47
+
+                    BoxLayout:
+                        padding: '5dp', '5dp'
+                        orientation: 'horizontal'
+
+                        Button:
+                            background_normal: ''
+                            background_color: 1, .9, .9, .99
+                            text: 'read'
+                            size_hint: .6, .6
+
+                        Button:
+                            background_normal: ''
+                            background_color: 1, .9, .9, .99
+                            id: fav_btn
+                            size_hint: .6, .6
+                            # pos_hint: {"x":0.35, "y":0.3}
+                            # color: 1, 1, 1, 1
+                            Image:
+                                allow_stretch: True
+                                size: fav_btn.size
+                                source: 'images/heart_black.png'
+                                pos: fav_btn.pos
+                BoxLayout:
+                    padding: '10dp', '10dp'
+                    size_hint_x: 0.33
+
                     Button:
-                        text: 'read'
-                        # on_press:
-                Button:
-                    text: 'serduszko'
+                        # size_hint_y: .6
+                        background_normal: ''
+                        background_color: 1, .5, .6, .85
+                        text: 'Save book'
+                        on_press:
+                            if root.book_id > 0: \
+                            app.update_book_in_db(
+                            root.book_id, input_title.text, input_author.text,
+                            input_category.text, stars_rating.rating, input_rented_person.text,
+                            input_date_completed.text, input_pages.text); \
+                            print(root.book_id); \
+                            root.reset_properties()
+                            else: \
+                            app.add_book_to_db(
+                            input_title.text, input_author.text, input_category.text,
+                            stars_rating.rating, input_rented_person.text,
+                            input_date_completed.text, input_pages.text); \
+                            root.reset_properties()
+
 
             BoxLayout:
                 orientation: 'vertical'
                 id: titleauthorstuff
                 TextInput:
                     id: input_title
-                    text: "Title"
+                    # border: 0, 0, 0, 0
+                    # background_color: 1, 1, 1, 1
+                    text: root.input_title
                     size_hint_y: 0.15
                 TextInput:
                     id: input_author
-                    text: "author"
+                    text: root.input_author
                     size_hint_y: 0.15
                 TextInput:
-                    text: "shelf"
+                    id: input_category
+                    text: root.input_category
                     size_hint_y: 0.15
                 TextInput:
-                    text: "langage"
+                    id: input_rented_person
+                    text: root.input_rented_person
                     size_hint_y: 0.15
                 TextInput:
+                    id: input_date_completed
+                    text: root.input_date_completed
                     size_hint_y: 0.15
-                    text: "pages"
+                TextInput:
+                    id: input_pages
+                    size_hint_y: 0.15
+                    text: str(root.input_pages)
 
                 TextInput:
+                # todo
                     size_hint_y: None
                     text: "description"
-            Button:
-                background_normal: ''
-                background_color: 1, .3, .4, .85
-                size_hint_y: 0.15
-                text: 'click to add to db'
-                on_press: app.add_book_to_db(input_title.text, input_author.text)
 
 <StatsScreen>:
     name: "stats"
@@ -166,7 +226,7 @@
         orientation: 'vertical'
         canvas:
             Color:
-                rgb: .2, .7, .5
+                rgb: 1, 1, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -176,7 +236,7 @@
     BoxLayout:
         canvas:
             Color:
-                rgb: .3, .2, .5
+                rgb: 1, 1, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -186,12 +246,57 @@
     BoxLayout:
         canvas:
             Color:
-                rgb: .1, .7, .5
+                rgb: 1, 1, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
+        Button:
+            text: "DELETE ALL BOOKS"
+            on_press: root.delete_DB()
 
+<StarsButton>:
+    orientation: 'horizontal'
+    padding: '5dp', '5dp'
 
+    Button:
+        id: first_s
+        size_hint_y: 0.7
+        text: '*'
+        background_normal: ''
+        background_color: 0.3, 0.3, 0.3, 1
+        color: 0, 0, 0, 1
+        on_press:
+            root.set_rating(1)
+
+    Button:
+        id: sec_s
+        size_hint_y: 0.7
+        text: '*'
+        background_normal: ''
+        background_color: 0.3, 0.3, 0.3, 1
+        color: 0, 0, 0, 1
+        on_press:
+            root.set_rating(2)
+
+    Button:
+        id: third_s
+        size_hint_y: 0.7
+        text: '*'
+        background_normal: ''
+        background_color: 0.3, 0.3, 0.3, 1
+        color: 0, 0, 0, 1
+        on_press:
+            root.set_rating(3)
+
+    Button:
+        id: fourth_s
+        size_hint_y: 0.7
+        text: '*'
+        background_normal: ''
+        background_color: 0.3, 0.3, 0.3, 1
+        color: 0, 0, 0, 1
+        on_press:
+            root.set_rating(4)
 
 # --------------------------------------------------------------- #
 # home screens
@@ -215,9 +320,9 @@
                 size: self.size
 
         BookScrollView:
-            size_hint_x: 1
+            # size_hint: (1, None)
             # size_hint_y: None
-            #size: (Window.width, Window.height)
+            # height: root.height
             do_scroll_x: False
             do_scroll_y: True
 
@@ -225,7 +330,7 @@
     name: 'shelf'
     canvas:
         Color:
-            rgb: .1, .3, .9
+            rgb: 1, 1, 1
         Rectangle:
             pos: self.pos
             size: self.size
@@ -251,7 +356,7 @@
     name: 'tag'
     canvas:
         Color:
-            rgb: .7, .8, .5
+            rgb: 1, 1, 1
         Rectangle:
             pos: self.pos
             size: self.size
@@ -276,7 +381,7 @@
         background_color: 1, .9, .9, .99
         text: 'image here'
         size_hint_y: 0.8
-        # on_release: app.edit_note(root.note_index)
+        on_release: app.open_edit_book(root.book_id)
 
     Label:
         size_hint_y: 0.2
