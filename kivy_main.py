@@ -15,7 +15,7 @@ from kivy.config import Config
 
 import kivy
 
-Config.set('graphics', 'width', '400')
+Config.set('graphics', 'width', '325')
 Config.set('graphics', 'height', '650')
 
 # kivy.require('1.9.0')
@@ -100,28 +100,28 @@ class StarsButton(BoxLayout):
 
     def set_rating(self, value):
         if value == 1:
-            self.ids['first_s'].background_color = 1.0, 0.0, 1.0, 1.0
-            self.ids['sec_s'].background_color = 1.0, 1.0, 1.0, 1.0
-            self.ids['third_s'].background_color = 1.0, 1.0, 1.0, 1.0
-            self.ids['fourth_s'].background_color = 1.0, 1.0, 1.0, 1.0
+            self.ids['first_s'].children[0].source = 'images/star_full.png'
+            self.ids['sec_s'].children[0].source = 'images/star_empty.png'
+            self.ids['third_s'].children[0].source = 'images/star_empty.png'
+            self.ids['fourth_s'].children[0].source = 'images/star_empty.png'
             self.rating = 1
         elif value == 2:
-            self.ids['first_s'].background_color = 1.0, 0.0, 1.0, 1.0
-            self.ids['sec_s'].background_color = 1.0, 0.0, 1.0, 1.0
-            self.ids['third_s'].background_color = 1.0, 1.0, 1.0, 1.0
-            self.ids['fourth_s'].background_color = 1.0, 1.0, 1.0, 1.0
+            self.ids['first_s'].children[0].source = 'images/star_full.png'
+            self.ids['sec_s'].children[0].source = 'images/star_full.png'
+            self.ids['third_s'].children[0].source = 'images/star_empty.png'
+            self.ids['fourth_s'].children[0].source = 'images/star_empty.png'
             self.rating = 2
         elif value == 3:
-            self.ids['first_s'].background_color = 1.0, 0.0, 1.0, 1.0
-            self.ids['sec_s'].background_color = 1.0, 0.0, 1.0, 1.0
-            self.ids['third_s'].background_color = 1.0, 0.0, 1.0, 1.0
-            self.ids['fourth_s'].background_color = 1.0, 1.0, 1.0, 1.0
+            self.ids['first_s'].children[0].source = 'images/star_full.png'
+            self.ids['sec_s'].children[0].source = 'images/star_full.png'
+            self.ids['third_s'].children[0].source = 'images/star_full.png'
+            self.ids['fourth_s'].children[0].source = 'images/star_empty.png'
             self.rating = 3
         elif value == 4:
-            self.ids['first_s'].background_color = 1.0, 0.0, 1.0, 1.0
-            self.ids['sec_s'].background_color = 1.0, 0.0, 1.0, 1.0
-            self.ids['third_s'].background_color = 1.0, 0.0, 1.0, 1.0
-            self.ids['fourth_s'].background_color = 1.0, 0.0, 1.0, 1.0
+            self.ids['first_s'].children[0].source = 'images/star_full.png'
+            self.ids['sec_s'].children[0].source = 'images/star_full.png'
+            self.ids['third_s'].children[0].source = 'images/star_full.png'
+            self.ids['fourth_s'].children[0].source = 'images/star_full.png'
             self.rating = 4
         else:
             pass
@@ -140,10 +140,18 @@ class BookScrollView(ScrollView):
         #TODO: height below is fixed, but should be dynamic
         layout = GridLayout(cols=3, spacing=15, size_hint_y=None, height=900, col_default_width = self.width / 3)
         for item in self.data:
-            book = BookItem(book_id=item['ID'],title=item['title'])
+            book = BookItem(book_id=item['ID'], title=item['title'])
             layout.add_widget(book)
         self.add_widget(layout)
 
+    def search_title(self, title_str):
+        books_to_del = []
+        for book in self.children[0].children:
+            if title_str not in book.title:
+                books_to_del.append(book)
+
+        for b in books_to_del:
+            self.children[0].remove_widget(b)
 
 class BookcaseApp(App):
     def build(self):

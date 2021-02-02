@@ -31,6 +31,7 @@ class SqliteDB:
         SqliteDB.conn.close()
 
     def create_table(table_name = "booktable"):
+        # TODO: is_read, image dest and favourite properties
         SqliteDB.c.execute('''CREATE TABLE if not exists %s
         (
             ID INTEGER,
