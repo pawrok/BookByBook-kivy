@@ -34,7 +34,6 @@
             text: 'Home'
             width: self.height
             on_release:
-                # rootmanager.clear_widgets()
                 app.add_home_screen()
                 rootmanager.current = 'home'
 
@@ -46,7 +45,9 @@
         Button:
             text: '+'
             width: self.height
-            on_release: rootmanager.current = 'new'
+            on_release:
+                app.add_newbook_screen()
+                rootmanager.current = 'new'
 
         Button:
             text: 'Wishlist'

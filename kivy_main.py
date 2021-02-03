@@ -244,6 +244,16 @@ class BookcaseApp(App):
         self.root.ids['rootmanager'].remove_widget(self.root.ids.rootmanager.screens[index])
         self.root.ids['rootmanager'].add_widget(HomeScreen())
 
+    def add_newbook_screen(self):
+        index = 0
+        for i in range(len(self.root.ids.rootmanager.screen_names)):
+            if self.root.ids.rootmanager.screen_names[i].find('new') != -1:
+                index = i
+        
+        self.root.ids['rootmanager'].remove_widget(self.root.ids.rootmanager.screens[index])
+        self.root.ids['rootmanager'].add_widget(AddScreen())
+
+
     def open_edit_book(self, id):
         for i in range(len(self.root.ids.rootmanager.screen_names)):
             if self.root.ids.rootmanager.screen_names[i].find('new') != -1:
