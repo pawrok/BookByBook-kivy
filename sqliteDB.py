@@ -3,11 +3,11 @@ import sqlite3
 class SqliteDB:
     " Singleton class "
     __instance__ = None
-    c = None # cursor
-    conn = None # connection
+    c = None        # cursor
+    conn = None     # connection
 
     def __init__(self):
-        # Constructor.
+        # Constructor
         if SqliteDB.__instance__ is None:
             SqliteDB.__instance__ = self
             SqliteDB.c, SqliteDB.conn = SqliteDB.start_connection()
@@ -17,7 +17,7 @@ class SqliteDB:
 
     @staticmethod
     def get_instance():
-        # Static method to fetch the current instance.
+        # Static method to fetch the current instance
         if not SqliteDB.__instance__:
             SqliteDB()
         return SqliteDB.__instance__
@@ -42,13 +42,17 @@ class SqliteDB:
             isRent INTEGER,
             rentedPerson TEXT,
             dateCompleted TEXT,
-            pageCount INTEGER
+            pageCount INTEGER,
+            isRead INTEGER,
+            imageDest TEXT,
+            isFav INTEGER,
+            describtion TEXT
         )''' % table_name)
 
     def add_book_toDB(
             title, author, category = '', rating = 0, \
             isRent = 0, rentedPerson = '', dateCompleted = '', \
-            pageCount = 0):
+            pageCount = 0, isRead = 0, imageDest='', isFav=0, describtion=''):
         # set ID to max(ID) + 1; fetchone() sometimes haven't worked
         SqliteDB.c.execute("SELECT MAX(ID) FROM booktable")
         xxx = [dict(row) for row in SqliteDB.c.fetchall()]
@@ -56,8 +60,8 @@ class SqliteDB:
             max_id = xxx[0]['MAX(ID)'] + 1
         except:
             max_id = 1
-        SqliteDB.c.execute("INSERT INTO booktable VALUES ('%d', '%s', '%s', '%s', '%d', '%d', '%s', '%s', '%d')" % \
-            (max_id, title, author, category, rating, isRent, rentedPerson, dateCompleted, pageCount))
+        SqliteDB.c.execute("INSERT INTO booktable VALUES ('%d', '%s', '%s', '%s', '%d', '%d', '%s', '%s', '%d', '%d', '%s', '%d', '%s')" % \
+            (max_id, title, author, category, rating, isRent, rentedPerson, dateCompleted, pageCount, isRead, imageDest, isFav, describtion))
         SqliteDB.conn.commit()
 
     def get_books_fromDB():
@@ -76,9 +80,10 @@ class SqliteDB:
         SqliteDB.c.execute('DELETE FROM booktable where ID = %d' % ID)
         SqliteDB.conn.commit()
 
-    def edit_book_inDB(ID, title, author, category = '', rating = 0, \
+    def edit_book_inDB(
+            ID, title, author, category = '', rating = 0, \
             isRent = 0, rentedPerson = '', dateCompleted = '', \
-            pageCount = 0):
+            pageCount = 0, isRead = 0, imageDest='', isFav=0, describtion=''):
         sql = """
             UPDATE booktable SET 
                 title = ?,
@@ -88,12 +93,17 @@ class SqliteDB:
                 isRent = ?,
                 rentedPerson = ?,
                 dateCompleted = ?,
-                pageCount = ?
+                pageCount = ?,
+                isRead  = ?,
+                imageDest  = ?,
+                isFav  = ?,
+                describtion  = ?
             WHERE 
                 ID = ?
             """
         SqliteDB.c.execute(sql, (title, author, category, rating, isRent, 
-                                rentedPerson, dateCompleted, pageCount, ID))
+                                rentedPerson, dateCompleted, pageCount, isRead,
+                                imageDest, isFav, describtion, ID))
         SqliteDB.conn.commit()
 
     def sort_books(books, param, rev):

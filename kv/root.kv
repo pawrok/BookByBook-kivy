@@ -84,38 +84,60 @@
         orientation: 'vertical'
 
         BoxLayout:
-            size_hint_y: 0.1
+            size_hint_y: 0.09
             orientation: 'horizontal'
             Button:
-                text: 'books'
+                text: 'Books'
                 on_press: middlemanager.current = 'book'
             Button:
-                text: 'shelves'
+                text: 'Shelves'
                 on_press: middlemanager.current = 'shelf'
             Button:
-                text: 'tags'
+                text: 'Tags'
                 on_press: middlemanager.current = 'tag'
 
         BoxLayout:
             size_hint_y: 0.07
+            padding: '2dp', '1dp', '2dp', '2dp'
+            canvas:
+                Color:
+                    rgba: 0, 0, 0, 1
+                Line:
+                    width: 1
+                    rectangle: self.x, self.y, self.width, self.height
+
             TextInput:
                 id: search_input
                 multiline: False
-                size_hint_x: 0.7
+                size_hint_x: 0.8
+                background_normal: ''
+                background_active: ''
+                border: 0, 0 ,0 ,0
             Button:
-                text: "search"
-                size_hint_x: 0.15
+                id: search_btn
+                size_hint_x: 0.08
+                background_normal: ''
+                background_color: 1, 1, 1, 1
                 on_press: root.middlemanager.ids.books_screen.ids.book_scroll.search_title(search_input.text)
+                Image:
+                    allow_stretch: True
+                    size: search_btn.width * 0.9, search_btn.height * 0.9
+                    source: 'images/search.png'
+                    pos: search_btn.x, search_btn.y + 1
+
             Button:
                 text: "Sort"
-                size_hint_x: None
+                size_hint_x: 0.15
 
         MiddleScreenManager:
             id: middlemanager
 
 <AddScreen>:
-    # TODO
     name: 'new'
+    stars_rating: stars_rating
+    fav_btn: fav_btn
+    read_btn: read_btn
+    add_image_btn: add_image_btn
     BoxLayout:
         # padding: '10dp', '0dp'
         canvas:
@@ -127,20 +149,21 @@
         BoxLayout:
             orientation: 'vertical'
             BoxLayout:
-                padding: '5dp', '5dp'
+                padding: '1dp', '5dp'
                 id: topaddbook
                 orientation: 'horizontal'
                 size_hint_y: 0.37
-                Button:
-                    id: add_image
+                AddImageButton:
+                    id: add_image_btn
                     background_normal: ''
                     background_color: 1, 1, 1, 1
                     size_hint_x: 0.37
+                    on_press: self.add_book_image()
                     Image:
                         allow_stretch: True
-                        size: add_image.size
+                        size: add_image_btn.size
                         source: 'images/add_image.png'
-                        pos: add_image.pos
+                        pos: add_image_btn.pos
 
                 BoxLayout:
                     padding: '5dp', '5dp'
@@ -154,25 +177,43 @@
                         orientation: 'horizontal'
                         size_hint_y: 0.55
 
-                        Button:
+                        ReadButton:
+                            id: read_btn
                             # background_normal: ''
                             # background_color: 1, .9, .9, .99
-                            text: 'read'
-                            size_hint: .5, .5
+                            size_hint: .7, .5
                             width: self.height
                             pos_hint: {'y': 0.2}
-                        
-                        Label:
-                            size_hint_x: 0.05
+                            on_press: self.set_read_status(self.isRead)
 
-                        Button:
+                            Label:
+                                text: 'Read'
+                                size: read_btn.width * 0.6, read_btn.height * 0.6
+                                pos: read_btn.x + 4, read_btn.y + 7
+
+                            Image:
+                                id: read_img
+                                allow_stretch: True
+                                size: read_btn.width * 0.4, read_btn.height * 0.4
+                                source: 'images/blank.png'
+                                pos: read_btn.x + 38, read_btn.y + 12
+
+                        Label:
+                            size_hint_x: 0.08
+
+                        FavButton:
                             # background_normal: ''
                             # background_color: 1, .9, .9, .99
                             id: fav_btn
-                            size_hint: .5, .5
+                            size_hint: .3, .5
                             pos_hint: {'y': 0.2}
-                            # color: 1, 1, 1, 1
+                            background_normal: ''
+                            background_color: 0.3, 0.3, 0.3, 1
+                            color: 0, 0, 0, 1
+                            on_press: self.set_favourite(self.is_fav)
+
                             Image:
+                                id: img
                                 allow_stretch: True
                                 size: fav_btn.size
                                 source: 'images/heart_black.png'
@@ -192,14 +233,16 @@
                                 app.update_book_in_db(
                                 root.book_id, input_title.text, input_author.text,
                                 input_category.text, stars_rating.rating, input_rented_person.text,
-                                input_date_completed.text, input_pages.text); \
+                                input_date_completed.text, input_pages.text, read_btn.isRead,
+                                add_image_btn.imageDest, fav_btn.is_fav, input_description.text); \
                                 print(root.book_id); \
                                 root.reset_properties()
                                 else: \
                                 app.add_book_to_db(
                                 input_title.text, input_author.text, input_category.text,
                                 stars_rating.rating, input_rented_person.text,
-                                input_date_completed.text, input_pages.text); \
+                                input_date_completed.text, input_pages.text, read_btn.isRead,
+                                add_image_btn.imageDest, fav_btn.is_fav, input_description.text); \
                                 root.reset_properties()
 
             BoxLayout:
@@ -233,9 +276,9 @@
                     text: str(root.input_pages)
 
                 TextInput:
-                # todo
+                    id: input_description
                     size_hint_y: None
-                    text: "description"
+                    text: root.input_description
 
 <StatsScreen>:
     name: "stats"

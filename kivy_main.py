@@ -1,5 +1,6 @@
 from sqliteDB import SqliteDB
 
+from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.app import App
 from kivy.lang import Builder
@@ -57,6 +58,8 @@ class AddScreen(Screen):
     input_date_completed = StringProperty("1.01.2021")
     input_pages = NumericProperty(0)
     book_id = NumericProperty(0)
+    input_description = StringProperty("Description")
+
     def reset_properties(self):
         self.input_title = "Title"
         self.input_author = "Author"
@@ -91,12 +94,52 @@ class BookItem(BoxLayout):
     title = StringProperty()
     book_id = NumericProperty()
     
+class FavButton(Button):
+    is_fav = NumericProperty()
+    is_fav = 0
+    def set_favourite(self, fav_input):
+        if fav_input == 0:
+            self.is_fav = 1
+            self.children[0].source = 'images/heart_red.png'
+        elif fav_input == 1:
+            self.is_fav = 0
+            self.children[0].source = 'images/heart_black.png'
+    
+    def load_favourite(self, fav_input):
+        if fav_input == 1:
+            self.is_fav = 1
+            self.children[0].source = 'images/heart_red.png'
+        elif fav_input == 0:
+            self.is_fav = 0
+            self.children[0].source = 'images/heart_black.png'
+
+class AddImageButton(Button):
+    imageDest = StringProperty()
+    imageDest = ''
+    def add_book_image(self):
+        pass
+
+class ReadButton(Button):
+    isRead = NumericProperty()
+    isRead = 0
+    def set_read_status(self, read_input):
+        if read_input == 0:
+            self.isRead = 1
+            self.children[0].source = 'images/checked.png'
+        elif read_input == 1:
+            self.isRead = 0
+            self.children[0].source = 'images/blank.png'
+    
+    def load_read_status(self, read_input):
+        if read_input == 1:
+            self.isRead = 1
+            self.children[0].source = 'images/checked.png'
+        elif read_input == 0:
+            self.isRead = 0
+            self.children[0].source = 'images/blank.png'
+
 class StarsButton(BoxLayout):
     rating = NumericProperty()
-    # def __init__(self, **kwargs):
-    #     super(StarsButton, self).__init__(**kwargs)
-    #     self.set_rating(self.rating)
-    #     print(self.rating)
 
     def set_rating(self, value):
         if value == 1:
@@ -123,10 +166,6 @@ class StarsButton(BoxLayout):
             self.ids['third_s'].children[0].source = 'images/star_full.png'
             self.ids['fourth_s'].children[0].source = 'images/star_full.png'
             self.rating = 4
-        else:
-            pass
-
-        
 
 class ShelfItem(BoxLayout):
     shelf_title = StringProperty()
@@ -162,7 +201,7 @@ class BookcaseApp(App):
 
     def add_book_to_db(
             self, input_title, input_author, input_category, input_rating, input_rented_person,
-            input_date_completed, input_pages):
+            input_date_completed, input_pages, isRead, imageDest, isFav, input_description):
         
         if input_rented_person:
             is_rent = True
@@ -174,11 +213,13 @@ class BookcaseApp(App):
         
         SqliteDB.add_book_toDB(
             input_title, input_author, input_category, input_rating,
-            is_rent, input_rented_person, input_date_completed, input_pages)
+            is_rent, input_rented_person, input_date_completed,
+            input_pages, isRead, imageDest, isFav, input_description)
     
     def update_book_in_db(
             self, id, input_title, input_author, input_category, input_rating,
-            input_rented_person, input_date_completed, input_pages):
+            input_rented_person, input_date_completed, input_pages, isRead,
+            imageDest, isFav, input_description):
         
         if input_rented_person:
             is_rent = True
@@ -191,7 +232,8 @@ class BookcaseApp(App):
         
         SqliteDB.edit_book_inDB(
             id, input_title, input_author, input_category, input_rating,
-            is_rent, input_rented_person, input_date_completed, input_pages)
+            is_rent, input_rented_person, input_date_completed, input_pages,
+            isRead, imageDest, isFav, input_description)
         
     def add_home_screen(self):
         index = 0
@@ -217,13 +259,16 @@ class BookcaseApp(App):
             input_rented_person = book_values['rentedPerson'],
             input_date_completed = book_values['dateCompleted'],
             input_pages = book_values['pageCount'],
-            book_id = id
-            ))
-        # self.root.ids['rootmanager'].screens[4].children[0].children[0].children[1].children[1].children[1]
-        self.root.ids['rootmanager'].current = 'new'
-        #                          AddScreen -> BoxLayout -> BoxLayout -> BoxLayout -> BoxLayout -> StarsButton -> set_rating
-        self.root.ids['rootmanager'].screens[4].children[0].children[0].children[1].children[1].children[1].set_rating(book_values['rating'])
+            book_id = id,
+            input_description = book_values['describtion'],
 
+            ))
+
+        self.root.ids['rootmanager'].current = 'new'
+        self.root.ids['rootmanager'].screens[4].ids['stars_rating'].set_rating(book_values['rating'])
+        self.root.ids['rootmanager'].screens[4].ids['fav_btn'].load_favourite(book_values['isFav'])
+        self.root.ids['rootmanager'].screens[4].ids['read_btn'].load_read_status(book_values['isRead'])
+        # self.root.ids['rootmanager'].screens[4].ids['add_image_btn'].xxxxx(book_values['imageDest'])
 
 if __name__ == '__main__':
     BookcaseApp().run()
