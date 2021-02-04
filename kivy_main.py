@@ -1,5 +1,10 @@
 from sqliteDB import SqliteDB
+from plyer import filechooser
+from shutil import copyfile
+import re
+import os.path
 
+import kivy
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.app import App
@@ -14,11 +19,9 @@ from kivy.properties import ListProperty, StringProperty, ObjectProperty, \
 from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 from kivy.config import Config
 
-import kivy
-
 Config.set('graphics', 'width', '325')
 Config.set('graphics', 'height', '650')
-
+dst_dir = os.getcwd() + "\\book_covers\\"
 # kivy.require('1.9.0')
 
 class RootRoot(BoxLayout):
@@ -59,18 +62,7 @@ class AddScreen(Screen):
     input_pages = NumericProperty(0)
     book_id = NumericProperty(0)
     input_description = StringProperty("Description")
-
-    def reset_properties(self):
-        self.input_title = "Title"
-        self.input_author = "Author"
-        self.input_category = "Category"
-        self.input_rating = 0
-        self.input_rented_person = "Borrowed to..."
-        self.input_date_completed = "1.01.2021"
-        self.input_pages = 0
-        self.book_id = 0
-     
-
+ 
 class WishScreen(Screen):
     pass
 
@@ -92,6 +84,7 @@ class GridLayoutTest(GridLayout):
 
 class BookItem(BoxLayout):
     title = StringProperty()
+    cover = StringProperty()
     book_id = NumericProperty()
     
 class FavButton(Button):
@@ -117,7 +110,23 @@ class AddImageButton(Button):
     imageDest = StringProperty()
     imageDest = ''
     def add_book_image(self):
-        pass
+        try:
+            path = filechooser.open_file(title="Pick a book cover ...", 
+                             filters=[("*")])[0]
+        except IndexError:
+            return 0
+        filenm = re.search('(\w)+.(\w)+$', path).group(0)
+        # print(os.getcwd() + dst)
+        self.imageDest = dst_dir + filenm
+        copyfile(path, self.imageDest)
+        self.children[0].source = self.imageDest
+    
+    def load_book_image(self, path):
+        if path:
+            self.imageDest = path
+        else:
+            self.imageDest = 'images/add_image.png'
+        self.children[0].source = self.imageDest
 
 class ReadButton(Button):
     isRead = NumericProperty()
@@ -179,7 +188,11 @@ class BookScrollView(ScrollView):
         #TODO: height below is fixed, but should be dynamic
         layout = GridLayout(cols=3, spacing=15, size_hint_y=None, height=900, col_default_width = self.width / 3)
         for item in self.data:
-            book = BookItem(book_id=item['ID'], title=item['title'])
+            if not item['imageDest']:
+                book_cover = 'images/book.png'
+            else:
+                book_cover = item['imageDest']
+            book = BookItem(book_id=item['ID'], title=item['title'], cover=book_cover)
             layout.add_widget(book)
         self.add_widget(layout)
 
@@ -278,7 +291,7 @@ class BookcaseApp(App):
         self.root.ids['rootmanager'].screens[4].ids['stars_rating'].set_rating(book_values['rating'])
         self.root.ids['rootmanager'].screens[4].ids['fav_btn'].load_favourite(book_values['isFav'])
         self.root.ids['rootmanager'].screens[4].ids['read_btn'].load_read_status(book_values['isRead'])
-        # self.root.ids['rootmanager'].screens[4].ids['add_image_btn'].xxxxx(book_values['imageDest'])
+        self.root.ids['rootmanager'].screens[4].ids['add_image_btn'].load_book_image(book_values['imageDest'])
 
 if __name__ == '__main__':
     BookcaseApp().run()

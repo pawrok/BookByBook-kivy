@@ -236,15 +236,15 @@
                                 input_category.text, stars_rating.rating, input_rented_person.text,
                                 input_date_completed.text, input_pages.text, read_btn.isRead,
                                 add_image_btn.imageDest, fav_btn.is_fav, input_description.text); \
-                                print(root.book_id); \
-                                root.reset_properties()
+                                print(root.book_id);
+                                # root.reset_properties()
                                 else: \
                                 app.add_book_to_db(
                                 input_title.text, input_author.text, input_category.text,
                                 stars_rating.rating, input_rented_person.text,
                                 input_date_completed.text, input_pages.text, read_btn.isRead,
-                                add_image_btn.imageDest, fav_btn.is_fav, input_description.text); \
-                                root.reset_properties()
+                                add_image_btn.imageDest, fav_btn.is_fav, input_description.text);
+                                # root.reset_properties()
 
             BoxLayout:
                 orientation: 'vertical'
@@ -457,11 +457,17 @@
     # size_hint_x: None
 
     Button:
+        id: cover_btn
         background_normal: ''
-        background_color: 1, .9, .9, .99
-        text: 'image here'
+        background_color: 1, 1, 1, 1
         size_hint_y: 0.8
         on_release: app.open_edit_book(root.book_id)
+        Image:
+            allow_stretch: True
+            size: cover_btn.width, cover_btn.height
+            source: root.cover
+            pos: cover_btn.x, cover_btn.y
+
 
     Label:
         size_hint_y: 0.2
