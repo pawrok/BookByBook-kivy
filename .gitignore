@@ -1,2 +1,4 @@
 example.db
 book_covers/
+__pycache__/
+images/png/

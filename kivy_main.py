@@ -18,6 +18,7 @@ from kivy.properties import ListProperty, StringProperty, ObjectProperty, \
         NumericProperty, BooleanProperty, AliasProperty
 from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 from kivy.config import Config
+from kivy.graphics import *
 
 Config.set('graphics', 'width', '325')
 Config.set('graphics', 'height', '650')
@@ -48,6 +49,14 @@ class MiddleScreenManager(ScreenManager):
 
 class HomeScreen(Screen):
     pass
+
+
+class HomeButton(Button):
+    line_color = ListProperty([1, 1, 1, 1], rebind=True)
+
+    def set_underline(self, rgb_color):
+        self.line_color = rgb_color
+
 
 class StatsScreen(Screen):
     pass
@@ -189,7 +198,7 @@ class BookScrollView(ScrollView):
         layout = GridLayout(cols=3, spacing=15, size_hint_y=None, height=900, col_default_width = self.width / 3)
         for item in self.data:
             if not item['imageDest']:
-                book_cover = 'images/book.png'
+                book_cover = 'images/book2.png'
             else:
                 book_cover = item['imageDest']
             book = BookItem(book_id=item['ID'], title=item['title'], cover=book_cover)
@@ -207,6 +216,8 @@ class BookScrollView(ScrollView):
 
 class BookcaseApp(App):
     def build(self):
+        self.title = 'BookByBook'
+        # self.icon = ''
         SqliteDB()
         Builder.load_file('kv/root.kv')
         self.root = RootRoot()

@@ -1,4 +1,6 @@
 #:kivy 2.0
+#:import C kivy.utils.get_color_from_hex
+
 
 <RootRoot>:
     orientation: 'vertical'
@@ -12,7 +14,9 @@
                 size: self.size
         size_hint_y: 0.07
         Label:
-            text: "Bookcase App"
+            text: "BookByBook"
+            font_name: 'fonts/Amatic.ttf'
+            font_size: '28sp'
 
     RootScreenManager:
         id: rootmanager
@@ -21,43 +25,67 @@
         id: bottommenu
         orientation: 'horizontal'
         size_hint_y: None
-        height: '48dp'
+        height: '60dp'
         padding: '5dp'
         canvas:
             Color:
-                rgb: .3, .3, .3
+                rgb: 1, 1, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
+            # Color:
+            #     rgb: 0, 0, 0
+            # Line:
+            #     points: self.pos[0] + 15, self.pos[1] + self.size[1], self.pos[0] + self.size[0] - 15, self.pos[1] + self.size[1]
+            #     width: 1
 
-        Button:
-            text: 'Home'
-            width: self.height
+        BottomButton:
+            btn_text: 'Home'
             on_release:
                 app.add_home_screen()
                 rootmanager.current = 'home'
+            btn_source: 'images/png/home.png'
 
-        Button:
-            text: 'Stats'
-            width: self.height
+        BottomButton:
+            btn_text: 'Stats'
             on_release: rootmanager.current = 'stats'
+            btn_source: 'images/png/file.png'
 
-        Button:
-            text: '+'
-            width: self.height
+        BottomButton:
+            btn_text: 'New'
             on_release:
                 app.add_newbook_screen()
                 rootmanager.current = 'new'
+            btn_source: 'images/png/add.png'
 
-        Button:
-            text: 'Wishlist'
-            width: self.height
+        BottomButton:
+            btn_text: 'Wishlist'
             on_release: rootmanager.current = 'wish'
+            btn_source: 'images/png/wishlist.png'
 
-        Button:
-            text: 'Settings'
-            width: self.height
+        BottomButton:
+            btn_text: 'Settings'
             on_release: rootmanager.current = 'settings'
+            btn_source: 'images/png/settings.png'
+
+<BottomButton@Button>:
+    btn_text: ''
+    btn_source: ''
+    background_normal: ''
+    background_color: 1, 1, 1, 0
+
+    BoxLayout:
+        pos: self.parent.pos
+        size: self.parent.size
+        orientation: 'vertical'
+        Image:
+            source: root.btn_source
+            size_hint: 1, 0.7
+        Label:
+            size_hint: 1, 0.3
+            text: root.btn_text
+            color: 0, 0, 0
+            font_size: '13sp'
 
 
 <RootScreenManager>:
@@ -70,6 +98,21 @@
     AddScreen:
     WishScreen:
     SettingsScreen:
+
+<HomeButton@Button>:
+    background_normal: ''
+    background_color: 1, 1, 1, 1
+    color: 0, 0, 0, 1
+    font_size: '17sp'
+    canvas:
+        Color:
+            rgba: root.line_color
+        Line:
+            points: root.pos[0] + 10, root.pos[1], root.pos[0] + root.size[0] - 10, root.pos[1]
+            width: 2
+            joint: 'miter'
+            cap: 'none'
+
 
 <HomeScreen>:
     name: "home"
@@ -85,53 +128,115 @@
         orientation: 'vertical'
 
         BoxLayout:
-            size_hint_y: 0.09
-            orientation: 'horizontal'
-            Button:
-                text: 'Books'
-                on_press: middlemanager.current = 'book'
-            Button:
-                text: 'Shelves'
-                on_press: middlemanager.current = 'shelf'
-            Button:
-                text: 'Tags'
-                on_press: middlemanager.current = 'tag'
-
-        BoxLayout:
-            size_hint_y: 0.07
-            padding: '2dp', '1dp', '2dp', '2dp'
+            padding: '4dp', '2dp', '4dp', '2dp'
+            size_hint_y: None
+            height: '38dp'
             canvas:
                 Color:
-                    rgba: 0, 0, 0, 1
-                Line:
-                    width: 1
-                    rectangle: self.x, self.y, self.width, self.height
+                    rgba: 1, 1, 1, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
 
-            TextInput:
-                id: search_input
-                multiline: False
-                size_hint_x: 0.8
-                background_normal: ''
-                background_active: ''
-                border: 0, 0 ,0 ,0
-            Button:
-                id: search_btn
-                size_hint_x: 0.08
-                background_normal: ''
-                background_color: 1, 1, 1, 1
-                on_press: root.middlemanager.ids.books_screen.ids.book_scroll.search_title(search_input.text)
-                Image:
-                    allow_stretch: True
-                    size: search_btn.width * 0.9, search_btn.height * 0.9
-                    source: 'images/search.png'
-                    pos: search_btn.x, search_btn.y + 1
+            BoxLayout:
+                orientation: 'horizontal'
+                HomeButton:
+                    id: books
+                    text: 'Books'
+                    line_color: 0.85, .6, .6, 1
+                    on_release:
+                        middlemanager.current = 'book'; \
+                        self.set_underline([0.85, .6, .6, 1]); \
+                        shelf.set_underline([0, 0, 0, 0]); \
+                        tags.set_underline([0, 0, 0, 0])
+                HomeButton:
+                    id: shelf
+                    text: 'Shelves'
+                    on_release:
+                        middlemanager.current = 'shelf'; \
+                        self.set_underline([0.85, .6, .6, 1]); \
+                        books.set_underline([0, 0, 0, 0]); \
+                        tags.set_underline([0, 0, 0, 0])
+                HomeButton:
+                    id: tags
+                    text: 'Tags'
+                    on_release:
+                        middlemanager.current = 'tag'; \
+                        self.set_underline([0.85, .6, .6, 1]); \
+                        shelf.set_underline([0, 0, 0, 0]); \
+                        books.set_underline([0, 0, 0, 0])
 
-            Button:
-                text: "Sort"
-                size_hint_x: 0.15
+        BoxLayout:
+            size_hint_y: None
+            height: '38dp'
+            padding: '2dp', '2dp', '2dp', '2dp'
+            canvas:
+                Color:
+                    rgba: 1, 1, 1, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            BoxLayout:
+                padding: '2dp', '1dp', '2dp', '2dp'
+                canvas.before:
+                    Color:
+                        rgba: 1, 1, 1, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                Label:
+                    size_hint_x: 0.05
+                TextInput:
+                    id: search_input
+                    multiline: False
+                    size_hint_x: 0.75
+                    background_normal: ''
+                    background_active: ''
+                    background_disabled_normal: ''
+                    background_color: 1, 1, 1, 1
+                    font_size: 15
+                    foreground_color: 1, 0, 0, 1
+                    hint_text: 'Search'
+
+                    canvas.before:
+                        Color:
+                            rgb: 0.3, 0.3, 0.3, 1
+                    canvas.after:
+                        Color:
+                            rgb: 0, 0, 0, 1
+                        Line:
+                            points: self.pos[0] , self.pos[1], self.pos[0] + self.size[0], self.pos[1]
+                            # width: 2
+
+                Button:
+                    id: search_btn
+                    size_hint_x: 0.08
+                    background_normal: ''
+                    background_color: 1, 1, 1, 0
+                    on_press: root.middlemanager.ids.books_screen.ids.book_scroll.search_title(search_input.text)
+                    Image:
+                        allow_stretch: True
+                        size: search_btn.width * 0.7, search_btn.height * 0.7
+                        source: 'images/search.png'
+                        pos: search_btn.x + search_btn.size[0] * 0.3, search_btn.y + search_btn.size[1] * 0.15
+                # Label:
+                #     size_hint_x: 0.05
+                Button:
+                    id: sort_btn
+                    background_normal: ''
+                    background_color: 1, 1, 1, 0
+                    size_hint_x: 0.12
+                    Image:
+                        allow_stretch: True
+                        size: sort_btn.width * 0.8, sort_btn.height * 0.8
+                        source: 'images/sort.png'
+                        pos: sort_btn.x + sort_btn.size[0] * 0.2, sort_btn.y + sort_btn.size[1] * 0.1
 
         MiddleScreenManager:
             id: middlemanager
+            # size_hint_y: None
 
 <AddScreen>:
     name: 'new'
