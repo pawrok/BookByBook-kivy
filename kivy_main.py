@@ -20,8 +20,8 @@ from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 from kivy.config import Config
 from kivy.graphics import *
 
-Config.set('graphics', 'width', '325')
-Config.set('graphics', 'height', '650')
+Config.set('graphics', 'width', '375')
+Config.set('graphics', 'height', '812')
 dst_dir = os.getcwd() + "\\book_covers\\"
 # kivy.require('1.9.0')
 
@@ -62,15 +62,15 @@ class StatsScreen(Screen):
     pass
 
 class AddScreen(Screen):
-    input_title = StringProperty("Title")
-    input_author = StringProperty("Author")
-    input_category = StringProperty("Category")
+    input_title = StringProperty("")
+    input_author = StringProperty("")
+    input_category = StringProperty("")
     input_rating = NumericProperty(0)
-    input_rented_person = StringProperty("Borrowed to...")
-    input_date_completed = StringProperty("1.01.2021")
+    input_rented_person = StringProperty("")
+    input_date_completed = StringProperty("")
     input_pages = NumericProperty(0)
     book_id = NumericProperty(0)
-    input_description = StringProperty("Description")
+    input_description = StringProperty("")
  
 class WishScreen(Screen):
     pass
@@ -229,6 +229,8 @@ class BookcaseApp(App):
         
         if input_rented_person:
             is_rent = True
+        else:
+            is_rent = False
         
         print("add")
         input_rating = int(input_rating)
@@ -304,5 +306,7 @@ class BookcaseApp(App):
         self.root.ids['rootmanager'].screens[4].ids['read_btn'].load_read_status(book_values['isRead'])
         self.root.ids['rootmanager'].screens[4].ids['add_image_btn'].load_book_image(book_values['imageDest'])
 
+    def test(self):
+        print('test')
 if __name__ == '__main__':
     BookcaseApp().run()
