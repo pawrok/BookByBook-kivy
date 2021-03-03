@@ -1,33 +1,37 @@
 from PIL import Image
 
-test_image = "test.png"
-original = Image.open(test_image)
-original.show()
-ratio = 475 / 300   # height / width
-width, height = original.size   # Get dimensions 
+def crop_and_resize(img_path, book_id):
+    ratio = 475 / 300   # height / width
+    size = (300, 475)
 
-if width * ratio > height:
-    new_width = height / ratio
-    to_cut = width - new_width
-    left = to_cut / 2
-    top = 0
-    right = width - (to_cut / 2)
-    bottom = height
-    cropped_example = original.crop((left, top, right, bottom))
-else:
-    new_height = width * ratio
-    to_cut = height - new_height
-    left = 0
-    top = to_cut / 2
-    right = width
-    bottom = height - (to_cut / 2)
-    cropped_example = original.crop((left, top, right, bottom))
+    original = Image.open(img_path)
+    width, height = original.size   # Get dimensions 
 
-size = (300, 475)
+    if width * ratio > height:
+        new_width = height / ratio
+        to_cut = width - new_width
+        
+        left = to_cut / 2
+        top = 0
+        right = width - (to_cut / 2)
+        bottom = height
+        
+        cropped_img = original.crop((left, top, right, bottom))
+    else:
+        new_height = width * ratio
+        to_cut = height - new_height
+        
+        left = 0
+        top = to_cut / 2
+        right = width
+        bottom = height - (to_cut / 2)
+        
+        cropped_img = original.crop((left, top, right, bottom))
 
-cropped_example.thumbnail(size)
+    cropped_img.thumbnail(size)
 
-cropped_example.show()
+    cropped_img = cropped_img.convert('RGB')
+    cropped_img.save('book_covers/' + str(book_id) + '.jpg')
 
-cropped_example = cropped_example.convert('RGB')
-cropped_example.save('thumbnail.jpg')
+
+crop_and_resize("C:\\git repositories\\bookcase\\book_covers\\1920x1200.jpg", 5)

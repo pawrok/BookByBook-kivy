@@ -1,6 +1,8 @@
 from sqliteDB import SqliteDB
 from plyer import filechooser
 from shutil import copyfile
+from PIL import Image
+from random import randint
 import re
 import os.path
 
@@ -116,18 +118,22 @@ class FavButton(Button):
             self.children[0].source = 'images/heart_black.png'
 
 class AddImageButton(Button):
-    imageDest = StringProperty()
-    imageDest = ''
-    def add_book_image(self):
+    imageDest = StringProperty('')
+    
+    def add_book_image(self, book_id):
         try:
             path = filechooser.open_file(title="Pick a book cover ...", 
                              filters=[("*")])[0]
         except IndexError:
             return 0
-        filenm = re.search('(\w)+.(\w)+$', path).group(0)
-        # print(os.getcwd() + dst)
-        self.imageDest = dst_dir + filenm
-        copyfile(path, self.imageDest)
+        
+        # TODO: save img as temp.jpg, then after book's save change it to id.jpg
+        if book_id == 0:
+            book_id = randint(9999, 999999)
+
+        self.crop_and_resize(path, book_id)
+        
+        self.imageDest = dst_dir + str(book_id) + '.jpg'
         self.children[0].source = self.imageDest
     
     def load_book_image(self, path):
@@ -136,6 +142,40 @@ class AddImageButton(Button):
         else:
             self.imageDest = 'images/add_image.png'
         self.children[0].source = self.imageDest
+    
+    def crop_and_resize(self, img_path, book_id):
+        ratio = 475 / 300   # height / width
+        size = (300, 475)
+
+        original = Image.open(img_path)
+        width, height = original.size   # Get dimensions 
+
+        if width * ratio > height:
+            new_width = height / ratio
+            to_cut = width - new_width
+            
+            left = to_cut / 2
+            top = 0
+            right = width - (to_cut / 2)
+            bottom = height
+            
+            cropped_img = original.crop((left, top, right, bottom))
+        else:
+            new_height = width * ratio
+            to_cut = height - new_height
+            
+            left = 0
+            top = to_cut / 2
+            right = width
+            bottom = height - (to_cut / 2)
+            
+            cropped_img = original.crop((left, top, right, bottom))
+
+        cropped_img.thumbnail(size)
+
+        cropped_img = cropped_img.convert('RGB')
+        cropped_img.save(dst_dir + str(book_id) + '.jpg')
+
 
 class ReadButton(Button):
     isRead = NumericProperty()
@@ -249,6 +289,8 @@ class BookcaseApp(App):
         
         if input_rented_person:
             is_rent = True
+        else:
+            is_rent = False
 
         print("update")
         
@@ -306,7 +348,42 @@ class BookcaseApp(App):
         self.root.ids['rootmanager'].screens[4].ids['read_btn'].load_read_status(book_values['isRead'])
         self.root.ids['rootmanager'].screens[4].ids['add_image_btn'].load_book_image(book_values['imageDest'])
 
-    def test(self):
-        print('test')
+    def crop_and_resize(self, img_path, book_id):
+        ratio = 475 / 300   # height / width
+        size = (300, 475)
+
+        original = Image.open(img_path)
+        width, height = original.size   # Get dimensions 
+
+        if width * ratio > height:
+            new_width = height / ratio
+            to_cut = width - new_width
+            
+            left = to_cut / 2
+            top = 0
+            right = width - (to_cut / 2)
+            bottom = height
+            
+            cropped_img = original.crop((left, top, right, bottom))
+        else:
+            new_height = width * ratio
+            to_cut = height - new_height
+            
+            left = 0
+            top = to_cut / 2
+            right = width
+            bottom = height - (to_cut / 2)
+            
+            cropped_img = original.crop((left, top, right, bottom))
+
+        cropped_img.thumbnail(size)
+
+        cropped_img = cropped_img.convert('RGB')
+        cropped_img.save('book_covers/' + str(book_id) + '.jpg')
+
+
+
+
+
 if __name__ == '__main__':
     BookcaseApp().run()
