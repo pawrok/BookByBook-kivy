@@ -3,3 +3,4 @@ book_covers/
 __pycache__/
 images/png/
 test.py
+books.db

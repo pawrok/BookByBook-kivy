@@ -11,7 +11,8 @@ class SqliteDB:
         if SqliteDB.__instance__ is None:
             SqliteDB.__instance__ = self
             SqliteDB.c, SqliteDB.conn = SqliteDB.start_connection()
-            SqliteDB.create_table()
+            SqliteDB.create_book_table()
+            SqliteDB.create_extra_tables()
         else:
             raise Exception("You cannot create another SqliteDB class")
 
@@ -23,114 +24,138 @@ class SqliteDB:
         return SqliteDB.__instance__
 
     def start_connection():
-        conn = sqlite3.connect('example.db')
+        conn = sqlite3.connect('books.db')
         conn.row_factory = sqlite3.Row
         return conn.cursor(), conn
 
     def close_connection():
         SqliteDB.conn.close()
 
-    def create_table(table_name = "booktable"):
-        # TODO: is_read, image dest and favourite properties
-        SqliteDB.c.execute('''CREATE TABLE if not exists %s
+    # --------------- Books DB ------------------
+
+    def create_book_table():
+        SqliteDB.c.execute('''CREATE TABLE if not exists booktable
         (
-            ID INTEGER,
+            book_id INTEGER,
             title TEXT,
             author TEXT,
             category TEXT,
             rating INTEGER,
-            isRent INTEGER,
             rentedPerson TEXT,
             dateCompleted TEXT,
             pageCount INTEGER,
             isRead INTEGER,
             imageDest TEXT,
             isFav INTEGER,
-            describtion TEXT
-        )''' % table_name)
+            describtion TEXT,
+            shelves TEXT,
+            tags TEXT
+        )''')
 
-    def add_book_toDB(
-            title, author, category = '', rating = 0, \
-            isRent = 0, rentedPerson = '', dateCompleted = '', \
-            pageCount = 0, isRead = 0, imageDest='', isFav=0, describtion=''):
-        # set ID to max(ID) + 1; fetchone() sometimes haven't worked
-        SqliteDB.c.execute("SELECT MAX(ID) FROM booktable")
-        xxx = [dict(row) for row in SqliteDB.c.fetchall()]
+    def add_book_to_db(
+            title, author, category, rating, rentedPerson,dateCompleted, 
+            pageCount, isRead, imageDest, isFav, describtion, shelves, tags):
+        
+        # set book_id to max(book_id) + 1; fetchone() sometimes haven't worked
+        SqliteDB.c.execute("SELECT MAX(book_id) FROM booktable")
+        max_dict = [dict(row) for row in SqliteDB.c.fetchall()]
+        
         try:
-            max_id = xxx[0]['MAX(ID)'] + 1
+            max_id = max_dict[0]['MAX(book_id)'] + 1
         except:
             max_id = 1
-        SqliteDB.c.execute("INSERT INTO booktable VALUES ('%d', '%s', '%s', '%s', '%d', '%d', '%s', '%s', '%d', '%d', '%s', '%d', '%s')" % \
-            (max_id, title, author, category, rating, isRent, rentedPerson, dateCompleted, pageCount, isRead, imageDest, isFav, describtion))
+        
+        SqliteDB.c.execute(
+            f"""INSERT INTO booktable VALUES (
+                '{max_id}', '{title}', '{author}', '{category}', '{rating}',
+                '{rentedPerson}', '{dateCompleted}', '{pageCount}',
+                '{isRead}', '{imageDest}', '{isFav}', '{describtion}',
+                '{shelves}', '{tags}')""")
+        
         SqliteDB.conn.commit()
 
-    def get_books_fromDB():
-        SqliteDB.c.execute('SELECT * FROM booktable')
-        return [dict(row) for row in SqliteDB.c.fetchall()]
-
-    def get_single_book_fromDB(ID):
-        SqliteDB.c.execute('SELECT * FROM booktable WHERE ID = %d' % ID)
+    def get_single_book_from_db(book_id):
+        SqliteDB.c.execute(f'SELECT * FROM booktable WHERE book_id = {book_id}')
         selected_book = SqliteDB.c.fetchone()
+        
         if selected_book != None:
             return dict(selected_book)
         else:
             return 0
 
-    def del_book_fromDB(ID):
-        SqliteDB.c.execute('DELETE FROM booktable where ID = %d' % ID)
+    def del_book_from_db(book_id):
+        SqliteDB.c.execute(f'DELETE FROM booktable where book_id = {book_id}')
         SqliteDB.conn.commit()
 
-    def edit_book_inDB(
-            ID, title, author, category = '', rating = 0, \
-            isRent = 0, rentedPerson = '', dateCompleted = '', \
-            pageCount = 0, isRead = 0, imageDest='', isFav=0, describtion=''):
+    def edit_book_in_db(
+            book_id, title, author, category, rating, rentedPerson, 
+            dateCompleted, pageCount, isRead, imageDest, isFav, describtion, 
+            shelves, tags):
         sql = """
             UPDATE booktable SET 
                 title = ?,
                 author = ?,
                 category = ?,
                 rating = ?,
-                isRent = ?,
                 rentedPerson = ?,
                 dateCompleted = ?,
                 pageCount = ?,
                 isRead  = ?,
                 imageDest  = ?,
                 isFav  = ?,
-                describtion  = ?
+                describtion  = ?,
+                shelves = ?,
+                tags = ?
             WHERE 
-                ID = ?
+                book_id = ?
             """
-        SqliteDB.c.execute(sql, (title, author, category, rating, isRent, 
-                                rentedPerson, dateCompleted, pageCount, isRead,
-                                imageDest, isFav, describtion, ID))
+        
+        SqliteDB.c.execute(sql, (title, author, category, rating, rentedPerson,
+                                dateCompleted, pageCount, isRead, imageDest,
+                                isFav, describtion, shelves, tags, book_id))
         SqliteDB.conn.commit()
 
     def sort_books(books, param, rev):
-        return [tpl for tpl in sorted(books, key=lambda item: item[param], reverse=rev)]
+        return [tpl for tpl in sorted(books, key=lambda item: item[param],
+                                      reverse=rev)]
 
     def filter_books(books, param, value):
         return [tpl for tpl in books if tpl[param] == value]
+    
+    def get_db_values(table_name):
+        SqliteDB.c.execute(f'SELECT * FROM {table_name}')
+        return [dict(row) for row in SqliteDB.c.fetchall()]
 
-    #  ------------- DEVELOPER FUNCTIONS ------------------
-    def delete_table():
-        SqliteDB.c.execute("DROP TABLE booktable")
+    # ------------- Shelves and tags DB ------------------
+
+    def create_extra_tables():
+        SqliteDB.c.execute(
+            '''CREATE TABLE IF NOT EXISTS shelves (shelf TEXT)''')
+        
+        SqliteDB.c.execute(
+            '''CREATE TABLE IF NOT EXISTS tags (tag TEXT)''')
+
+
+    def insert_to(table, value):
+        SqliteDB.c.execute(f"INSERT INTO {table} VALUES ('{value}')")
         SqliteDB.conn.commit()
-        SqliteDB.create_table()
+
+    def del_value_from(value, table, row_type):
+        SqliteDB.c.execute(f'DELETE FROM {table} where {row_type} = {value}')
+        SqliteDB.conn.commit()
 
 
 
 debug_mode = 0
 if debug_mode:
     SqliteDB()
-    # SqliteDB.create_table()
-    # SqliteDB.add_book_toDB(1, 'title1', 'author1')
+    # SqliteDB.create_extra_tables()
+    # SqliteDB.insert_to('tags', "raz;dwa;ddddd")
     # SqliteDB.del_book_fromDB(1)
     # SqliteDB.c.execute("SELECT * FROM booktable")
     # print(SqliteDB.c.fetchall())
-    # SqliteDB.c.execute("SELECT MAX(ID) FROM booktable")
+    # SqliteDB.c.execute("SELECT MAX(book_id) FROM booktable")
     # xxx = [dict(row) for row in SqliteDB.c.fetchall()]
-    # print(xxx[0]['MAX(ID)'])
+    # print(xxx[0]['MAX(book_id)'])
     # print(SqliteDB.get_single_book_fromDB(555))
-    print(SqliteDB.get_books_fromDB())
- 
+    print(SqliteDB.get_db_values('booktable'))
