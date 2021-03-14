@@ -65,6 +65,9 @@ class SqliteDB:
         except:
             max_id = 1
         
+        shelves = ';'.join(shelves)
+        tags = ';'.join(tags)
+
         SqliteDB.c.execute(
             f"""INSERT INTO booktable VALUES (
                 '{max_id}', '{title}', '{author}', '{category}', '{rating}',
@@ -91,6 +94,9 @@ class SqliteDB:
             book_id, title, author, category, rating, rentedPerson, 
             dateCompleted, pageCount, isRead, imageDest, isFav, describtion, 
             shelves, tags):
+        shelves = ';'.join(shelves)
+        tags = ';'.join(tags)
+        
         sql = """
             UPDATE booktable SET 
                 title = ?,
@@ -140,22 +146,6 @@ class SqliteDB:
         SqliteDB.c.execute(f"INSERT INTO {table} VALUES ('{value}')")
         SqliteDB.conn.commit()
 
-    def del_value_from(value, table, row_type):
-        SqliteDB.c.execute(f'DELETE FROM {table} where {row_type} = {value}')
+    def del_value_from(table, value, row_type):
+        SqliteDB.c.execute(f'DELETE FROM {table} WHERE {row_type} = \'{value}\'')
         SqliteDB.conn.commit()
-
-
-
-debug_mode = 0
-if debug_mode:
-    SqliteDB()
-    # SqliteDB.create_extra_tables()
-    # SqliteDB.insert_to('tags', "raz;dwa;ddddd")
-    # SqliteDB.del_book_fromDB(1)
-    # SqliteDB.c.execute("SELECT * FROM booktable")
-    # print(SqliteDB.c.fetchall())
-    # SqliteDB.c.execute("SELECT MAX(book_id) FROM booktable")
-    # xxx = [dict(row) for row in SqliteDB.c.fetchall()]
-    # print(xxx[0]['MAX(book_id)'])
-    # print(SqliteDB.get_single_book_fromDB(555))
-    print(SqliteDB.get_db_values('booktable'))

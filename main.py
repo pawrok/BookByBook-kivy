@@ -17,6 +17,7 @@ from kivy.properties import ListProperty, StringProperty, NumericProperty
 from kivy.uix.screenmanager import Screen
 from kivy.config import Config
 from kivy.graphics import *
+from kivy.utils import get_color_from_hex
 
 Config.set('graphics', 'width', '300')
 Config.set('graphics', 'height', '652')
@@ -26,17 +27,29 @@ dst_dir = os.getcwd() + "\\book_covers\\"
 class RootWidget(BoxLayout):
     pass
 
+
 class HomeScreen(Screen):
     pass
 
+
 class ShelfViewer(RecycleView): 
     def __init__(self, **kwargs): 
-        super(ShelfViewer, self).__init__(**kwargs) 
-        self.data = [
-            {'shelf_title': 'title1'},
-            {'shelf_title': 'title2'},
-            {'shelf_title': 'title3'},
-            {'shelf_title': 'title4'}]
+        super(ShelfViewer, self).__init__(**kwargs)
+        self.data = SqliteDB.get_db_values('shelves')
+
+    def add_shelf(self, shelf_title):
+        if shelf_title:
+            SqliteDB.insert_to('shelves', shelf_title)
+            self.data.append({'shelf': shelf_title})
+    
+    def remove_shelf(self, shelf_title):
+            SqliteDB.del_value_from('shelves', shelf_title, 'shelf')
+            self.data.remove({'shelf': shelf_title})
+
+# class DropDownShelfViewer(RecycleView): 
+#     def __init__(self, **kwargs): 
+#         super(DropDownShelfViewer, self).__init__(**kwargs)
+#         self.data = SqliteDB.get_db_values('shelves')
 
 
 class HomeButton(Button):
@@ -56,8 +69,8 @@ class AddScreen(Screen):
     pages = NumericProperty(0)
     book_id = NumericProperty(0)
     description = StringProperty("")
-    shelves = StringProperty("")
-    tags = StringProperty("")
+    shelves = ListProperty()
+    tags = ListProperty()
 
     def save_book(self, values):
         if self.book_id > 0:
@@ -80,7 +93,7 @@ class FavButton(Button):
             self.children[0].source = 'images/heart_red.png'
         elif fav_input == 1:
             self.is_fav = 0
-            self.children[0].source = 'images/heart_black.png'
+            self.children[0].source = 'images/heart.png'
     
     def load_favourite(self, fav_input):
         if fav_input == 1:
@@ -88,7 +101,7 @@ class FavButton(Button):
             self.children[0].source = 'images/heart_red.png'
         elif fav_input == 0:
             self.is_fav = 0
-            self.children[0].source = 'images/heart_black.png'
+            self.children[0].source = 'images/heart.png'
 
 
 class AddImageButton(Button):
@@ -114,7 +127,7 @@ class AddImageButton(Button):
         if path:
             self.imageDest = path
         else:
-            self.imageDest = 'images/book2.png'
+            self.imageDest = 'images/cover_blank.png'
         
         self.children[0].source = self.imageDest
     
@@ -158,18 +171,22 @@ class ReadButton(Button):
     def set_read_status(self, read_input):
         if read_input == 0:
             self.isRead = 1
-            self.children[0].source = 'images/checked.png'
+            self.background_color = get_color_from_hex("#28527a")
+            self.color = get_color_from_hex("#ffffff")
+
         elif read_input == 1:
             self.isRead = 0
-            self.children[0].source = 'images/blank.png'
+            self.background_color = get_color_from_hex("#ffffff")
+            self.color = get_color_from_hex("#28527a")
 
     def load_read_status(self, read_input):
         if read_input == 1:
-            self.isRead = 1
-            self.children[0].source = 'images/checked.png'
+            self.background_color = get_color_from_hex("#28527a")
+            self.color = get_color_from_hex("#ffffff")
         elif read_input == 0:
             self.isRead = 0
-            self.children[0].source = 'images/blank.png'
+            self.background_color = get_color_from_hex("#ffffff")
+            self.color = get_color_from_hex("#28527a")
 
 
 class StarsButton(BoxLayout):
@@ -178,21 +195,21 @@ class StarsButton(BoxLayout):
     def set_rating(self, value):
         if value == 1:
             self.ids['first_s'].children[0].source = 'images/star_full.png'
-            self.ids['sec_s'].children[0].source = 'images/star_empty.png'
-            self.ids['third_s'].children[0].source = 'images/star_empty.png'
-            self.ids['fourth_s'].children[0].source = 'images/star_empty.png'
+            self.ids['sec_s'].children[0].source = 'images/star.png'
+            self.ids['third_s'].children[0].source = 'images/star.png'
+            self.ids['fourth_s'].children[0].source = 'images/star.png'
             self.rating = 1
         elif value == 2:
             self.ids['first_s'].children[0].source = 'images/star_full.png'
             self.ids['sec_s'].children[0].source = 'images/star_full.png'
-            self.ids['third_s'].children[0].source = 'images/star_empty.png'
-            self.ids['fourth_s'].children[0].source = 'images/star_empty.png'
+            self.ids['third_s'].children[0].source = 'images/star.png'
+            self.ids['fourth_s'].children[0].source = 'images/star.png'
             self.rating = 2
         elif value == 3:
             self.ids['first_s'].children[0].source = 'images/star_full.png'
             self.ids['sec_s'].children[0].source = 'images/star_full.png'
             self.ids['third_s'].children[0].source = 'images/star_full.png'
-            self.ids['fourth_s'].children[0].source = 'images/star_empty.png'
+            self.ids['fourth_s'].children[0].source = 'images/star.png'
             self.rating = 3
         elif value == 4:
             self.ids['first_s'].children[0].source = 'images/star_full.png'
@@ -203,7 +220,13 @@ class StarsButton(BoxLayout):
 
 
 class ShelfItem(BoxLayout):
-    shelf_title = StringProperty()
+    shelf = StringProperty()
+    # TODO:
+    # book_count = NumericProperty(0)
+
+
+class SmallShelfItem(BoxLayout):
+    shelf = StringProperty()
 
 
 class BookGridLayout(GridLayout):
@@ -211,10 +234,11 @@ class BookGridLayout(GridLayout):
         super(BookGridLayout, self).__init__(**kwargs)
 
         self.data = SqliteDB.get_db_values('booktable')
+        print(self.data)
 
         for item in self.data:
             if not item['imageDest']:
-                book_cover = 'images/book2.png'
+                book_cover = 'images/cover_blank.png'
             else:
                 book_cover = item['imageDest']
 
@@ -278,7 +302,9 @@ class BookcaseApp(App):
             date_completed = book_values['dateCompleted'],
             pages = book_values['pageCount'],
             book_id = book_id,
-            description = book_values['describtion']
+            description = book_values['describtion'],
+            shelves = book_values['shelves'].split(';'),
+            tags = book_values['tags'].split(';')
             ))
 
         self.root.ids['rootmanager'].current = 'new'
@@ -286,6 +312,11 @@ class BookcaseApp(App):
         self.root.ids['rootmanager'].screens[4].ids['fav_btn'].load_favourite(book_values['isFav'])
         self.root.ids['rootmanager'].screens[4].ids['read_btn'].load_read_status(book_values['isRead'])
         self.root.ids['rootmanager'].screens[4].ids['add_image_btn'].load_book_image(book_values['imageDest'])
+
+    def set_shelves(self, shelf):
+        if shelf not in self.root.ids['rootmanager'].screens[4].shelves:
+            self.root.ids['rootmanager'].screens[4].shelves.append(shelf)
+        print(self.root.ids['rootmanager'].screens[4].shelves)
 
 
 if __name__ == '__main__':
