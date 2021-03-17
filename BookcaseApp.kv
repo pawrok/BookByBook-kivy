@@ -91,11 +91,9 @@
 
 <RootScreenManager@ScreenManager>:
     id: rootmanager
-    home_screen: home_screen.__self__
     size: root.width, root.height
     transition: NoTransition()
     HomeScreen:
-        id: home_screen
     StatsScreen:
     AddScreen:
     WishScreen:
@@ -172,14 +170,15 @@
         MiddleScreenManager:
             id: middlemanager
 
+
 <AddScreen>:
     name: 'new'
     stars_rating: stars_rating
     fav_btn: fav_btn
     read_btn: read_btn
     add_image_btn: add_image_btn
-    shelf: shelf
-    tags: tags
+    shelf_input: shelf_input
+    tags_input: tags_input
 
     BoxLayout:
         orientation: 'vertical'
@@ -329,12 +328,12 @@
                     book_property: str(root.pages)
 
                 SelectTextInput:
-                    id: shelf
+                    id: shelf_input
                     label_txt: 'Shelves'
                     hint_txt: '(select shelves to add)'
 
                 SelectTextInput:
-                    id: tags
+                    id: tags_input
                     label_txt: 'Tags'
                     hint_txt: '(select tags to add)'
 
@@ -569,6 +568,80 @@
             Rectangle:
                 pos: self.pos
                 size: self.size
+        Image:
+            # size_hint_y: 0.45
+            source: 'pie.png'
+
+        Image:
+            # size_hint_y: 0.45
+            source: 'pie2.png'
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: '20dp', '5dp'
+
+            Label:
+                text: ' Top Authors'
+                color: 0.5, 0.5, 0.5
+                size_hint_y: None
+                height: '40dp'
+                halign: 'left'
+                text_size: self.size
+
+            BoxLayout:
+                orientation: 'horizontal'
+
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_x: None
+                    width: '40dp'
+
+                    CircleLabel:
+                        some_text: str(root.top_authors[0][1])
+                    CircleLabel:
+                        some_text: str(root.top_authors[1][1])
+                    CircleLabel:
+                        some_text: str(root.top_authors[2][1])
+
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_x: None
+                    width: '100dp'
+
+                    Label:
+                        text: str(root.top_authors[0][0])
+                        color: 0.5, 0.5, 0.5
+                        # halign: 'left'
+                        # text_size: self.size
+
+                    Label:
+                        text: str(root.top_authors[1][0])
+                        color: 0.5, 0.5, 0.5
+                        # halign: 'left'
+                        # text_size: self.size
+
+                    Label:
+                        text: str(root.top_authors[2][0])
+                        color: 0.5, 0.5, 0.5
+                        # halign: 'left'
+                        # text_size: self.size
+
+                Label:
+
+<CircleLabel@Widget>:
+    some_text: ''
+    canvas:
+        Color:
+            rgba: 0.5, 0.5, 0.5, 1
+        Line:
+            width: 1.
+            circle:
+                (self.center_x, self.center_y, min(self.width, self.height)
+                / 3)
+    Label:
+        center: root.center
+        text: root.some_text
+        color: 0.5, 0.5, 0.5
 
 <WishScreen@Screen>:
     name: "wish"
@@ -991,12 +1064,9 @@
 # widgets for MiddleScreenManager
 
 <BookItem>:
-    # height: root.height
-    # width: self.width
-    height: self.width * 1.4
+    height: self.width * 1.5
     orientation: 'vertical'
     size_hint_y: None
-    # size_hint_x: None
 
     Button:
         id: cover_btn
@@ -1012,9 +1082,13 @@
 
 
     Label:
-        size_hint_y: 0.2
+        size_hint_y: 0.3
         color: utils.get_color_from_hex('#28527a')
-        text: root.title
+        text: app.format_book_title(root.title)
+        halign: 'center'
+        # shorten: True
+        # text_size: self.size
+        # split_str: ' '
 
 <ShelfItem>:
 
@@ -1044,7 +1118,7 @@
                 background_down: ''
                 background_color: utils.get_color_from_hex('#ffffff')
                 color: utils.get_color_from_hex('#28527a')
-                # on_press: self.set_read_status(self.isRead)
+                on_press: root.open_shelf()
 
             Label:
                 size_hint_x: 0.1
@@ -1118,9 +1192,6 @@
 
     BoxLayout:
         orientation: 'horizontal'
-        # padding: '5dp'
-        # size_hint_x: None
-        # width: '150dp'
 
         Label:
             size_hint_x: None
@@ -1145,21 +1216,22 @@
                 background_down: ''
                 background_color: utils.get_color_from_hex('#ffffff')
                 color: utils.get_color_from_hex('#28527a')
-                on_release: app.set_shelves(root.shelf)
+                on_release:
+                    app.set_shelves(root.shelf)
 
             Button:
                 id: st_btn
                 size_hint_x: 0.2
                 background_normal: ''
                 background_color: utils.get_color_from_hex('#ffffff')
-                # on_release: dropdown.open(self)
+                on_release:
+                    app.set_shelves(root.shelf)
 
                 Image:
-                    id: r_img
-                    source: 'images/checkbox_empty.png'
+                    source: root.checkbox_img
                     size: st_btn.width * 0.5, st_btn.height * 0.5
                     pos: st_btn.x + st_btn.size[0] * 0.25, st_btn.y + st_btn.size[1] * 0.25
-# * st_btn.size[0] * 0.1  * st_btn.size[1] * 0.1
+
         Label:
             size_hint_x: None
             width: '5dp'
@@ -1211,3 +1283,7 @@
 
                 text: 'Cancel'
                 on_release: root.dismiss()
+
+
+<Label>:
+    color: 0, 0, 0

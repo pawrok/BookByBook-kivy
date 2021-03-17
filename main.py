@@ -5,6 +5,10 @@ from PIL import Image
 from random import randint
 import re
 import os.path
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+from collections import defaultdict
+import itertools
 
 import kivy
 from kivy.uix.button import Button
@@ -13,13 +17,13 @@ from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.recycleview import RecycleView 
-from kivy.properties import ListProperty, StringProperty, NumericProperty
+from kivy.properties import ListProperty, StringProperty, NumericProperty, DictProperty
 from kivy.uix.screenmanager import Screen
 from kivy.config import Config
 from kivy.graphics import *
 from kivy.utils import get_color_from_hex
 
-Config.set('graphics', 'width', '300')
+Config.set('graphics', 'width', '330')
 Config.set('graphics', 'height', '652')
 dst_dir = os.getcwd() + "\\book_covers\\"
 
@@ -82,6 +86,8 @@ class BookItem(BoxLayout):
     title = StringProperty()
     cover = StringProperty()
     book_id = NumericProperty()
+    shelves = StringProperty()
+
 
 
 class FavButton(Button):
@@ -223,10 +229,110 @@ class ShelfItem(BoxLayout):
     shelf = StringProperty()
     # TODO:
     # book_count = NumericProperty(0)
+    def open_shelf(self):
+        for i in range(len(App.get_running_app().root.ids.rootmanager.screen_names)):
+            if App.get_running_app().root.ids.rootmanager.screen_names[i].find('home') != -1:
+                index = i
+
+        App.get_running_app().root.ids['rootmanager'].screens[index].middlemanager.current = 'book'
+        test = App.get_running_app().root.ids['rootmanager']
+        
+        App.get_running_app().root.ids['rootmanager'].screens[index].middlemanager.books_screen.book_scroll.search_shelf(self.shelf)
+
+        print("AAAA")
+
+class StatsScreen(Screen):
+    top_authors = ListProperty()
+
+    def __init__(self, **kwargs):
+        super(StatsScreen, self).__init__(**kwargs)
+        self.plot_data()
+        self.top_authors = self.find_top_authors()
+    
+    def find_top_authors(self):
+        books_data = SqliteDB.get_db_values('booktable')
+        
+        authors = defaultdict(int)
+        for item in books_data:
+            if item['isRead']:
+                authors[item['author']] += 1
+
+        top_authors = [(x, y) for x, y in itertools.islice(sorted(authors.items(), key=lambda item: item[1], reverse=True), 3)]
+
+        if len(top_authors) < 3:
+            top_authors.append(('', 0))
+            top_authors.append(('', 0))
+        
+        return top_authors
+
+    
+    def plot_data(self):
+        books_data = SqliteDB.get_db_values('booktable')
+
+        " ----- Read books pie ----- "
+        all_books = len(books_data)
+        read_books = 0
+        for item in books_data:
+            if item['isRead']:
+                read_books += 1
+
+        counts = [all_books-read_books, read_books]
+        explode = 2 * (0.025,)
+
+        fig1, ax1 = plt.subplots()
+        ax1.pie(counts, startangle=90, pctdistance=0.78, explode=explode)
+        
+        centre_circle = plt.Circle((0, 0), 0.65, fc='white')
+        fig = plt.gcf()
+        fig.gca().add_artist(centre_circle)
+        
+        textstr = f"Books read: {read_books}\n\n{read_books/all_books*100:0.0f}% of your library "
+        
+        plt.figtext(0.51, 0.45, textstr, fontsize=14)
+        plt.subplots_adjust(right=0.5)
+
+        plt.savefig("pie.png", bbox_inches='tight', pad_inches=0)
+
+        " ----- Categories pie ----- "
+        category_counts = defaultdict(int)
+        for item in books_data:
+            category_counts[item['category']] += 1
+        
+        categories = [ct if ct else 'no category' for ct in category_counts.keys()]
+
+        def func(pct, allvals):
+            absolute = int(pct/100.*sum(allvals))
+            if pct < 3:
+                return ""
+            else:
+                return "{:.0f}%\n({:d})".format(pct, absolute)
+        
+        fig1, ax1 = plt.subplots()
+        explode = len(categories) * (0.05,)
+        category_counts = list(category_counts.values())
+
+        patches, texts, autotexts = ax1.pie(category_counts, autopct=lambda pct: func(pct, category_counts),
+            startangle=90, pctdistance=0.8, explode=explode)
+
+        ax1.legend(patches, categories,
+                title="Categories            ",
+                loc="center left",
+                bbox_to_anchor=(0.95, 0, 0.5, 1),
+                frameon=False,
+                fontsize=12,
+                title_fontsize=14)
+
+        centre_circle = plt.Circle((0, 0), 0.65, fc='white')
+        fig = plt.gcf()
+        fig.gca().add_artist(centre_circle)
+        plt.subplots_adjust(right=0.5)
+
+        plt.savefig("pie2.png", bbox_inches='tight', pad_inches=0)
 
 
 class SmallShelfItem(BoxLayout):
     shelf = StringProperty()
+    checkbox_img = StringProperty('images/checkbox_empty.png')       
 
 
 class BookGridLayout(GridLayout):
@@ -234,7 +340,6 @@ class BookGridLayout(GridLayout):
         super(BookGridLayout, self).__init__(**kwargs)
 
         self.data = SqliteDB.get_db_values('booktable')
-        print(self.data)
 
         for item in self.data:
             if not item['imageDest']:
@@ -242,14 +347,25 @@ class BookGridLayout(GridLayout):
             else:
                 book_cover = item['imageDest']
 
-            book = BookItem(book_id=item['book_id'], title=item['title'], cover=book_cover)
+            book = BookItem(book_id=item['book_id'], title=item['title'], cover=book_cover, shelves=item['shelves'])
             self.add_widget(book)
             self.height += book.height / 3 + 10
 
     def search_title(self, title_str):
         books_to_del = []
         for book in self.children:
+            test = book
             if title_str not in book.title:
+                books_to_del.append(book)
+
+        for b in books_to_del:
+            self.remove_widget(b)
+
+    def search_shelf(self, shelf_str):
+        books_to_del = []
+        for book in self.children:
+            test = book
+            if shelf_str not in book.shelves:
                 books_to_del.append(book)
 
         for b in books_to_del:
@@ -262,11 +378,18 @@ class BookcaseApp(App):
         # self.icon = ''
 
         SqliteDB()
-        # Builder.load_file('kv/root.kv')
 
         self.root = RootWidget()
         return self.root
+
+    def format_book_title(self, book_title):
+        book_title = book_title[:24]
         
+        if book_title.count(' ') > 1:
+            return book_title[:8] + book_title[8:].replace(' ', '\n', 1)
+        else:
+            return book_title.replace(' ', '\n', 1)
+
     def add_home_screen(self):
         index = 0
         for i in range(len(self.root.ids.rootmanager.screen_names)):
@@ -312,11 +435,37 @@ class BookcaseApp(App):
         self.root.ids['rootmanager'].screens[4].ids['fav_btn'].load_favourite(book_values['isFav'])
         self.root.ids['rootmanager'].screens[4].ids['read_btn'].load_read_status(book_values['isRead'])
         self.root.ids['rootmanager'].screens[4].ids['add_image_btn'].load_book_image(book_values['imageDest'])
+        self.set_shelves_input()
 
     def set_shelves(self, shelf):
         if shelf not in self.root.ids['rootmanager'].screens[4].shelves:
             self.root.ids['rootmanager'].screens[4].shelves.append(shelf)
-        print(self.root.ids['rootmanager'].screens[4].shelves)
+        else:
+            self.root.ids['rootmanager'].screens[4].shelves.remove(shelf)
+        
+        self.set_shelves_input()
+
+
+    def set_shelves_input(self):
+        for i in range(len(self.root.ids.rootmanager.screen_names)):
+            if self.root.ids.rootmanager.screen_names[i].find('new') != -1:
+                index = i
+
+        shelves = ';'.join(self.root.ids['rootmanager'].screens[index].shelves)
+        shelves_data = self.root.ids['rootmanager'].screens[4].ids['shelf_input'].ids['drop_down_shelf_viewer'].data
+        
+        for shelf_dict in shelves_data:
+            if shelf_dict['shelf'] in shelves:
+                shelf_dict['checkbox_img'] = 'images/checkbox.png'
+            else:
+                shelf_dict['checkbox_img'] = 'images/checkbox_empty.png'
+
+        # print(shelves_data)
+        # print(self.root.ids['rootmanager'].screens[4].ids['shelf_input'].ids['drop_down_shelf_viewer'].data)
+
+
+
+
 
 
 if __name__ == '__main__':
