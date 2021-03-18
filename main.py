@@ -50,11 +50,6 @@ class ShelfViewer(RecycleView):
             SqliteDB.del_value_from('shelves', shelf_title, 'shelf')
             self.data.remove({'shelf': shelf_title})
 
-# class DropDownShelfViewer(RecycleView): 
-#     def __init__(self, **kwargs): 
-#         super(DropDownShelfViewer, self).__init__(**kwargs)
-#         self.data = SqliteDB.get_db_values('shelves')
-
 
 class HomeButton(Button):
     line_color = ListProperty([1, 1, 1, 1], rebind=True)
@@ -133,7 +128,7 @@ class AddImageButton(Button):
         if path:
             self.imageDest = path
         else:
-            self.imageDest = 'images/cover_blank.png'
+            self.imageDest = 'images/book_random_ver2.png'
         
         self.children[0].source = self.imageDest
     
@@ -187,6 +182,7 @@ class ReadButton(Button):
 
     def load_read_status(self, read_input):
         if read_input == 1:
+            self.isRead = 1
             self.background_color = get_color_from_hex("#28527a")
             self.color = get_color_from_hex("#ffffff")
         elif read_input == 0:
@@ -332,7 +328,7 @@ class StatsScreen(Screen):
 
 class SmallShelfItem(BoxLayout):
     shelf = StringProperty()
-    checkbox_img = StringProperty('images/checkbox_empty.png')       
+    checkbox_img = StringProperty('images/checkbox_empty.png')
 
 
 class BookGridLayout(GridLayout):
@@ -343,7 +339,7 @@ class BookGridLayout(GridLayout):
 
         for item in self.data:
             if not item['imageDest']:
-                book_cover = 'images/cover_blank.png'
+                book_cover = 'images/book_random_ver2.png'
             else:
                 book_cover = item['imageDest']
 
@@ -460,13 +456,20 @@ class BookcaseApp(App):
             else:
                 shelf_dict['checkbox_img'] = 'images/checkbox_empty.png'
 
-        # print(shelves_data)
-        # print(self.root.ids['rootmanager'].screens[4].ids['shelf_input'].ids['drop_down_shelf_viewer'].data)
-
-
-
 
 
 
 if __name__ == '__main__':
     BookcaseApp().run()
+
+
+# TODO: 
+# sort
+# clear after search
+# tags
+# rename shelf, tag
+# shelf book count
+# excel export
+# checkbox instant update
+# wishlist
+# android app

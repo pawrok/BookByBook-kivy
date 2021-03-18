@@ -31,14 +31,20 @@
         id: bottommenu
         orientation: 'horizontal'
         size_hint_y: None
-        height: '60dp'
-        padding: '5dp'
-        canvas:
+        height: '46dp'
+        padding: '6dp', '4dp'
+        canvas.before:
             Color:
                 rgb: 1, 1, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
+
+        canvas.after:
+            Color:
+                rgba: 0.8, 0.8, 0.8, 0.85
+            Line:
+                points: self.pos[0], self.pos[1] + self.size[1], self.pos[0] + self.size[0], self.pos[1] + self.size[1]
 
         BottomButton:
             btn_text: 'Home'
@@ -132,7 +138,7 @@
             padding: '4dp', '2dp', '4dp', '2dp'
             size_hint_y: None
             height: '38dp'
-            canvas:
+            canvas.before:
                 Color:
                     rgba: 1, 1, 1, 1
                 Rectangle:
@@ -182,215 +188,211 @@
 
     BoxLayout:
         orientation: 'vertical'
-        padding: '12dp', '4dp'
-        canvas:
-            Color:
-                rgb: 1, 1, 1
-            Rectangle:
-                pos: self.pos
-                size: self.size
 
         BoxLayout:
-            padding: '1dp', '0dp'
-            id: topaddbook
-            orientation: 'horizontal'
-            size_hint_y: 0.25
-            AddImageButton:
-                id: add_image_btn
-                background_normal: ''
-                background_color: 1, 1, 1, 1
-                size_hint_x: 0.37
-                on_press: self.add_book_image(root.book_id)
-                Image:
-                    allow_stretch: True
-                    size: add_image_btn.size
-                    source: 'images/cover_blank_plus.png'
-                    pos: add_image_btn.pos
+            orientation: 'vertical'
+            padding: '12dp', '4dp'
+            canvas:
+                Color:
+                    rgb: 1, 1, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
 
             BoxLayout:
-                padding: '5dp', '0dp'
-                size_hint_x: 0.63
-                orientation: 'vertical'
-                canvas:
-                    Color:
-                        rgb: 1, 1, 1
-                    Rectangle:
-                        pos: self.pos
-                        size: self.size
-
-                StarsButton:
-                    id: stars_rating
-                    size_hint_y: 0.45
+                padding: '1dp', '0dp'
+                id: topaddbook
+                orientation: 'horizontal'
+                size_hint_y: 0.25
+                AddImageButton:
+                    id: add_image_btn
+                    background_normal: ''
+                    background_color: 1, 1, 1, 1
+                    size_hint_x: 0.37
+                    on_press: self.add_book_image(root.book_id)
+                    Image:
+                        allow_stretch: True
+                        size: add_image_btn.size
+                        source: 'images/cover_blank_plus.png'
+                        pos: add_image_btn.pos
 
                 BoxLayout:
+                    padding: '5dp', '0dp'
+                    size_hint_x: 0.63
                     orientation: 'vertical'
-                    size_hint_y: 0.55
+                    canvas:
+                        Color:
+                            rgb: 1, 1, 1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+
+                    StarsButton:
+                        id: stars_rating
+                        size_hint_y: 0.45
 
                     BoxLayout:
-                        orientation: 'horizontal'
+                        orientation: 'vertical'
+                        size_hint_y: 0.55
 
-                        FavButton:
-                            # background_normal: ''
-                            # background_color: 1, .9, .9, .99
-                            id: fav_btn
-                            size_hint: .3, 0.75
-                            # pos_hint: {'y': 0.2}
-                            background_normal: ''
-                            background_color: 1, 1, 1, 1
-                            color: 0, 0, 0, 1
-                            on_press: self.set_favourite(self.is_fav)
+                        BoxLayout:
+                            orientation: 'horizontal'
 
-                            Image:
-                                id: img
-                                allow_stretch: True
-                                size: fav_btn.size
-                                source: 'images/heart.png'
-                                pos: fav_btn.pos
+                            FavButton:
+                                # background_normal: ''
+                                # background_color: 1, .9, .9, .99
+                                id: fav_btn
+                                size_hint: .3, 0.75
+                                # pos_hint: {'y': 0.2}
+                                background_normal: ''
+                                background_color: 1, 1, 1, 1
+                                color: 0, 0, 0, 1
+                                on_press: self.set_favourite(self.is_fav)
 
-                        Label:
-                            size_hint_x: 0.05
+                                Image:
+                                    id: img
+                                    allow_stretch: True
+                                    size: fav_btn.size
+                                    source: 'images/heart.png'
+                                    pos: fav_btn.pos
 
-                        ReadButton:
-                            id: read_btn
-                            text: 'Read'
-                            background_normal: ''
-                            background_down: ''
-                            background_color: utils.get_color_from_hex('#ffffff')
-                            color: utils.get_color_from_hex('#28527a')
-                            size_hint: .6, 0.75
-                            # width: self.height
-                            # pos_hint: {'y': 0.2}
-                            on_press: self.set_read_status(self.isRead)
-                            canvas.after:
-                                Color:
-                                    rgb: utils.get_color_from_hex('#28527a')
-                                Line:
-                                    rectangle: self.x, self.y, self.width, self.height
-                                    joint: 'miter'
-                                    cap: 'none'
+                            Label:
+                                size_hint_x: 0.05
 
-                        Label:
-                            size_hint_x: 0.05
+                            ReadButton:
+                                id: read_btn
+                                text: 'Read'
+                                background_normal: ''
+                                background_down: ''
+                                background_color: utils.get_color_from_hex('#ffffff')
+                                color: utils.get_color_from_hex('#28527a')
+                                size_hint: .6, 0.75
+                                # width: self.height
+                                # pos_hint: {'y': 0.2}
+                                on_press: self.set_read_status(self.isRead)
+                                canvas.after:
+                                    Color:
+                                        rgb: utils.get_color_from_hex('#28527a')
+                                    Line:
+                                        rectangle: self.x, self.y, self.width, self.height
+                                        joint: 'miter'
+                                        cap: 'none'
 
-                    BoxLayout:
-                        orientation: 'horizontal'
+                            Label:
+                                size_hint_x: 0.05
 
-                        Label:
-                            # text: 'Shelf'
-                            color: 0, 0, 0, 1
+                        BoxLayout:
+                            orientation: 'horizontal'
 
-                    #     Label:
-                    #         text: 'Select tags'
-                    #         color: 0, 0, 0, 1
+                            Label:
+                                # text: 'Shelf'
+                                color: 0, 0, 0, 1
 
-        ScrollView:
-            size_hint_y: 0.75
-            GridLayout:
-                id: titleauthorstuff
-                cols: 1
-                size_hint_y: None
-                height: self.minimum_height
-                # adaptive_height: True
+                        #     Label:
+                        #         text: 'Select tags'
+                        #         color: 0, 0, 0, 1
 
-                BookTextInput:
-                    id: input_title
-                    book_property: root.title
-                    label_txt: 'Title'
-                    hint_txt: 'title'
+            ScrollView:
+                size_hint_y: 0.75
+                GridLayout:
+                    id: titleauthorstuff
+                    cols: 1
+                    size_hint_y: None
+                    height: self.minimum_height
+                    # adaptive_height: True
 
-                BookTextInput:
-                    id: input_author
-                    book_property: root.author
-                    label_txt: 'Author'
-                    hint_txt: 'author'
+                    BookTextInput:
+                        id: input_title
+                        book_property: root.title
+                        label_txt: 'Title'
+                        hint_txt: 'title'
 
-                BookTextInput:
-                    id: input_category
-                    book_property: root.category
-                    label_txt: 'Category'
-                    hint_txt: 'category'
+                    BookTextInput:
+                        id: input_author
+                        book_property: root.author
+                        label_txt: 'Author'
+                        hint_txt: 'author'
 
-                BookTextInput:
-                    id: input_rented_person
-                    book_property: root.rented_person
-                    label_txt: 'Rented to'
-                    hint_txt: "person's name"
+                    BookTextInput:
+                        id: input_category
+                        book_property: root.category
+                        label_txt: 'Category'
+                        hint_txt: 'category'
 
-                BookTextInput:
-                    id: input_date_completed
-                    book_property: root.date_completed
-                    label_txt: 'Date completed'
-                    hint_txt: 'date'
+                    BookTextInput:
+                        id: input_rented_person
+                        book_property: root.rented_person
+                        label_txt: 'Rented to'
+                        hint_txt: "person's name"
 
-                BookTextInput:
-                    id: input_pages
-                    label_txt: 'Number of pages'
-                    book_property: str(root.pages)
+                    BookTextInput:
+                        id: input_date_completed
+                        book_property: root.date_completed
+                        label_txt: 'Date completed'
+                        hint_txt: 'date'
 
-                SelectTextInput:
-                    id: shelf_input
-                    label_txt: 'Shelves'
-                    hint_txt: '(select shelves to add)'
+                    BookTextInput:
+                        id: input_pages
+                        label_txt: 'Number of pages'
+                        book_property: str(root.pages)
 
-                SelectTextInput:
-                    id: tags_input
-                    label_txt: 'Tags'
-                    hint_txt: '(select tags to add)'
+                    SelectTextInput:
+                        id: shelf_input
+                        label_txt: 'Shelves'
+                        hint_txt: '(select shelves to add)'
 
-                BookTextInput:
-                    id: input_description
-                    text_input_height: '66dp'
-                    height: '99dp'
-                    label_txt: 'Description and notes'
-                    hint_txt: 'description'
-                    book_property: root.description
-                Label:
-                    size_hint: 1, None
-                    height: '42dp'
+                    SelectTextInput:
+                        id: tags_input
+                        label_txt: 'Tags'
+                        hint_txt: '(select tags to add)'
 
-        BoxLayout:
-            id: save_box
-            size_hint_y: None
-            height: '1dp'
+                    BookTextInput:
+                        id: input_description
+                        text_input_height: '66dp'
+                        height: '99dp'
+                        label_txt: 'Description and notes'
+                        hint_txt: 'description'
+                        book_property: root.description
+                    Label:
+                        size_hint: 1, None
+                        height: '39dp'
 
-            Label:
-                size_hint: 0.25, None
+    BoxLayout:
+        size_hint_y: None
+        height: '1dp'
 
-            Button:
-                size_hint: 0.5, None
-                background_normal: ''
-                background_color: utils.get_color_from_hex('#28527a')
-                text: 'Save book'
-                height: '40dp'
-                color: utils.get_color_from_hex('#ffffff')
-                # canvas.after:
-                #     Color:
-                #         rgb: utils.get_color_from_hex('#28527a')
-                #     Line:
-                #         rectangle: self.x, self.y, self.width, self.height
-                #         joint: 'miter'
-                #         cap: 'none'
+        Button:
+            size_hint: 1, None
+            background_normal: ''
+            background_color: utils.get_color_from_hex('#686c73')
+            text: 'Save book'
+            height: '40dp'
+            color: utils.get_color_from_hex('#ffffff')
+            # canvas.after:
+            #     Color:
+            #         rgb: utils.get_color_from_hex('#28527a')
+            #     Line:
+            #         rectangle: self.x, self.y, self.width, self.height
+            #         joint: 'miter'
+            #         cap: 'none'
 
-                on_press:
-                    root.save_book([
-                    input_title.ids['text_input'].text,
-                    input_author.ids['text_input'].text,
-                    input_category.ids['text_input'].text,
-                    stars_rating.rating,
-                    input_rented_person.ids['text_input'].text,
-                    input_date_completed.ids['text_input'].text,
-                    input_pages.ids['text_input'].text,
-                    read_btn.isRead,
-                    add_image_btn.imageDest,
-                    fav_btn.is_fav,
-                    input_description.ids['text_input'].text,
-                    root.shelves,
-                    root.tags]); \
-                    app.add_home_screen(); \
-                    root.parent.current = 'home'
-            Label:
-                size_hint: 0.25, None
-                height: '10dp'
+            on_press:
+                root.save_book([
+                input_title.ids['text_input'].text,
+                input_author.ids['text_input'].text,
+                input_category.ids['text_input'].text,
+                stars_rating.rating,
+                input_rented_person.ids['text_input'].text,
+                input_date_completed.ids['text_input'].text,
+                input_pages.ids['text_input'].text,
+                read_btn.isRead,
+                add_image_btn.imageDest,
+                fav_btn.is_fav,
+                input_description.ids['text_input'].text,
+                root.shelves,
+                root.tags]); \
+                app.add_home_screen(); \
+                root.parent.current = 'home'
 
 
 <SelectTextInput@BoxLayout>
@@ -838,7 +840,7 @@
                             width: '5dp'
 
             BoxLayout:
-                padding: 10
+                padding: '6dp', '6dp', '6dp', '0dp'
                 canvas:
                     Color:
                         rgb: 1, 1, 1
