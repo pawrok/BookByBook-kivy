@@ -235,7 +235,6 @@ class ShelfItem(BoxLayout):
         
         App.get_running_app().root.ids['rootmanager'].screens[index].middlemanager.books_screen.book_scroll.search_shelf(self.shelf)
 
-        print("AAAA")
 
 class StatsScreen(Screen):
     top_authors = ListProperty()

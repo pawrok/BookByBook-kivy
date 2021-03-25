@@ -51,8 +51,6 @@
             on_release:
                 app.add_home_screen()
                 rootmanager.current = 'home'
-                test
-                rootmanager.children[4].
             btn_source: 'images/home.png'
 
         BottomButton:
@@ -157,7 +155,8 @@
                         middlemanager.current = 'book'; \
                         self.set_underline(utils.get_color_from_hex('#28527a')); \
                         shelf.set_underline([0, 0, 0, 0]); \
-                        tags.set_underline([0, 0, 0, 0])
+                        tags.set_underline([0, 0, 0, 0]); \
+                        middlemanager.current_screen.book_scroll.refresh_books()
                 HomeButton:
                     id: shelf
                     text: 'Shelves'
