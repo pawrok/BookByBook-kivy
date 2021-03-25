@@ -51,6 +51,8 @@
             on_release:
                 app.add_home_screen()
                 rootmanager.current = 'home'
+                test
+                rootmanager.children[4].
             btn_source: 'images/home.png'
 
         BottomButton:
@@ -397,6 +399,7 @@
 
 <SelectTextInput@BoxLayout>
     drop_down_shelf_viewer: drop_down_shelf_viewer
+    test: test
     label_txt: ''
     hint_txt: ''
     book_property: ''
@@ -471,6 +474,7 @@
             id: dropdown
 
             BoxLayout:
+                id: test
                 size_hint: 1, None
                 height: '70dp'
                 # width: '180dp'
@@ -1191,6 +1195,7 @@
 
 
 <SmallShelfItem>:
+    checbox_img_widget: checbox_img_widget
 
     BoxLayout:
         orientation: 'horizontal'
@@ -1215,11 +1220,15 @@
                 size_hint_x: 0.8
                 text: root.shelf
                 background_normal: ''
-                background_down: ''
                 background_color: utils.get_color_from_hex('#ffffff')
                 color: utils.get_color_from_hex('#28527a')
                 on_release:
-                    app.set_shelves(root.shelf)
+                    if checbox_img_widget.source == 'images/checkbox_empty.png':\
+                    app.set_shelves(root.shelf); \
+                    checbox_img_widget.source = 'images/checkbox.png'
+                    else: \
+                    app.set_shelves(root.shelf); \
+                    checbox_img_widget.source = 'images/checkbox_empty.png'
 
             Button:
                 id: st_btn
@@ -1227,9 +1236,15 @@
                 background_normal: ''
                 background_color: utils.get_color_from_hex('#ffffff')
                 on_release:
-                    app.set_shelves(root.shelf)
+                    if checbox_img_widget.source == 'images/checkbox_empty.png':\
+                    app.set_shelves(root.shelf); \
+                    checbox_img_widget.source = 'images/checkbox.png'
+                    else: \
+                    app.set_shelves(root.shelf); \
+                    checbox_img_widget.source = 'images/checkbox_empty.png'
 
                 Image:
+                    id: checbox_img_widget
                     source: root.checkbox_img
                     size: st_btn.width * 0.5, st_btn.height * 0.5
                     pos: st_btn.x + st_btn.size[0] * 0.25, st_btn.y + st_btn.size[1] * 0.25
