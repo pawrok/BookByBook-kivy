@@ -23,8 +23,8 @@ from kivy.config import Config
 from kivy.graphics import *
 from kivy.utils import get_color_from_hex
 
-Config.set('graphics', 'width', '330')
-Config.set('graphics', 'height', '652')
+Config.set('graphics', 'width', '350')
+Config.set('graphics', 'height', '660')
 dst_dir = os.getcwd() + "\\book_covers\\"
 
 
@@ -128,7 +128,7 @@ class AddImageButton(Button):
         if path:
             self.imageDest = path
         else:
-            self.imageDest = 'images/book_random_ver2.png'
+            self.imageDest = 'images/book_random_ver1.png'
         
         self.children[0].source = self.imageDest
     
@@ -258,6 +258,7 @@ class StatsScreen(Screen):
         if len(top_authors) < 3:
             top_authors.append(('', 0))
             top_authors.append(('', 0))
+            top_authors.append(('', 0))
         
         return top_authors
 
@@ -267,6 +268,8 @@ class StatsScreen(Screen):
 
         " ----- Read books pie ----- "
         all_books = len(books_data)
+        if not all_books:
+            all_books = 1
         read_books = 0
         for item in books_data:
             if item['isRead']:
@@ -332,6 +335,9 @@ class SmallShelfItem(BoxLayout):
 
 
 class BookGridLayout(GridLayout):
+    deleted_books = []
+    non_shelf_books = []
+
     def __init__(self, **kwargs):
         super(BookGridLayout, self).__init__(**kwargs)
 
@@ -339,7 +345,7 @@ class BookGridLayout(GridLayout):
 
         for item in self.data:
             if not item['imageDest']:
-                book_cover = 'images/book_random_ver2.png'
+                book_cover = 'images/book_random_ver1.png'
             else:
                 book_cover = item['imageDest']
 
@@ -348,25 +354,37 @@ class BookGridLayout(GridLayout):
             self.height += book.height / 3 + 10
 
     def search_title(self, title_str):
-        books_to_del = []
+        
         for book in self.children:
-            test = book
             if title_str not in book.title:
-                books_to_del.append(book)
+                self.deleted_books.append(book)
 
-        for b in books_to_del:
+        remove_from_del = []
+        for book in self.deleted_books:
+            if title_str in book.title:
+                self.add_widget(book)
+                remove_from_del.append(book)
+                
+        for b in remove_from_del:
+            self.deleted_books.remove(b)
+
+        for b in self.deleted_books:
             self.remove_widget(b)
 
     def search_shelf(self, shelf_str):
-        books_to_del = []
         for book in self.children:
             test = book
             if shelf_str not in book.shelves:
-                books_to_del.append(book)
+                self.non_shelf_books.append(book)
 
-        for b in books_to_del:
+        for b in self.non_shelf_books:
             self.remove_widget(b)
 
+    def refresh_books(self):
+        for book in self.non_shelf_books:
+            self.add_widget(book)
+        
+        self.non_shelf_books = []
 
 class BookcaseApp(App):
     def build(self):
@@ -431,18 +449,15 @@ class BookcaseApp(App):
         self.root.ids['rootmanager'].screens[4].ids['fav_btn'].load_favourite(book_values['isFav'])
         self.root.ids['rootmanager'].screens[4].ids['read_btn'].load_read_status(book_values['isRead'])
         self.root.ids['rootmanager'].screens[4].ids['add_image_btn'].load_book_image(book_values['imageDest'])
-        self.set_shelves_input()
+        self.load_shelves_checkboxes()
 
     def set_shelves(self, shelf):
         if shelf not in self.root.ids['rootmanager'].screens[4].shelves:
             self.root.ids['rootmanager'].screens[4].shelves.append(shelf)
         else:
             self.root.ids['rootmanager'].screens[4].shelves.remove(shelf)
-        
-        self.set_shelves_input()
 
-
-    def set_shelves_input(self):
+    def load_shelves_checkboxes(self):
         for i in range(len(self.root.ids.rootmanager.screen_names)):
             if self.root.ids.rootmanager.screen_names[i].find('new') != -1:
                 index = i
@@ -457,19 +472,16 @@ class BookcaseApp(App):
                 shelf_dict['checkbox_img'] = 'images/checkbox_empty.png'
 
 
-
-
 if __name__ == '__main__':
     BookcaseApp().run()
 
 
-# TODO: 
-# sort
-# clear after search
-# tags
-# rename shelf, tag
-# shelf book count
-# excel export
-# checkbox instant update
-# wishlist
-# android app
+# TODO:
+# sort ~3h
+# clear after search ~3h
+# tags ~1.5h
+# rename shelf, tag ~1h
+# shelf book count ~3h
+# excel/txt export ~1h
+# wishlist ~1h
+# android app ~4h
