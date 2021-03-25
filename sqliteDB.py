@@ -141,6 +141,9 @@ class SqliteDB:
         SqliteDB.c.execute(
             '''CREATE TABLE IF NOT EXISTS tags (tag TEXT)''')
 
+        SqliteDB.c.execute(
+            '''CREATE TABLE IF NOT EXISTS wishlist (title TEXT, author TEXT)''')
+
 
     def insert_to(table, value):
         SqliteDB.c.execute(f"INSERT INTO {table} VALUES ('{value}')")
@@ -148,4 +151,8 @@ class SqliteDB:
 
     def del_value_from(table, value, row_type):
         SqliteDB.c.execute(f'DELETE FROM {table} WHERE {row_type} = \'{value}\'')
+        SqliteDB.conn.commit()
+
+    def insert_to_wishlist(title, author):
+        SqliteDB.c.execute(f"INSERT INTO wishlist VALUES ('{title}', '{author}')")
         SqliteDB.conn.commit()

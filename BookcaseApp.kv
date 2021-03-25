@@ -161,6 +161,8 @@
                     id: shelf
                     text: 'Shelves'
                     on_release:
+                        middlemanager.current = 'book'; \
+                        middlemanager.current_screen.book_scroll.refresh_books(); \
                         middlemanager.current = 'shelf'; \
                         self.set_underline(utils.get_color_from_hex('#28527a')); \
                         books.set_underline([0, 0, 0, 0]); \
@@ -1127,7 +1129,7 @@
 
             Label:
                 size_hint_x: 0.1
-                text: '0'
+                text: str(root.book_count)
                 color: 0.5, 0.5, 0.5, 1
 
             BoxLayout:

@@ -36,10 +36,12 @@ class HomeScreen(Screen):
     pass
 
 
-class ShelfViewer(RecycleView): 
-    def __init__(self, **kwargs): 
+class ShelfViewer(RecycleView):
+    def __init__(self, **kwargs):
         super(ShelfViewer, self).__init__(**kwargs)
         self.data = SqliteDB.get_db_values('shelves')
+        for shelf_dict in self.data:
+            shelf_dict['book_count'] = self.count_shelf_books(shelf_dict['shelf'])
 
     def add_shelf(self, shelf_title):
         if shelf_title:
@@ -49,6 +51,19 @@ class ShelfViewer(RecycleView):
     def remove_shelf(self, shelf_title):
             SqliteDB.del_value_from('shelves', shelf_title, 'shelf')
             self.data.remove({'shelf': shelf_title})
+    
+    def count_shelf_books(self, shelf):
+        book_count = 0
+        books_data = SqliteDB.get_db_values('booktable')
+        
+        # print(self.shelf)
+        for item in books_data:
+            # print('shelf: ', item['shelves'], 'item: ', item['title'])
+
+            if item['shelves'] and shelf in item['shelves']:
+                book_count += 1
+        
+        return book_count
 
 
 class HomeButton(Button):
@@ -223,8 +238,8 @@ class StarsButton(BoxLayout):
 
 class ShelfItem(BoxLayout):
     shelf = StringProperty()
-    # TODO:
-    # book_count = NumericProperty(0)
+    book_count = NumericProperty(0)
+    
     def open_shelf(self):
         for i in range(len(App.get_running_app().root.ids.rootmanager.screen_names)):
             if App.get_running_app().root.ids.rootmanager.screen_names[i].find('home') != -1:
@@ -382,8 +397,12 @@ class BookGridLayout(GridLayout):
     def refresh_books(self):
         for book in self.non_shelf_books:
             self.add_widget(book)
+
+        for book in self.deleted_books:
+            self.add_widget(book)
         
         self.non_shelf_books = []
+        self.deleted_books = []
 
 class BookcaseApp(App):
     def build(self):
@@ -477,10 +496,8 @@ if __name__ == '__main__':
 
 # TODO:
 # sort ~3h
-# clear after search ~3h
 # tags ~1.5h
 # rename shelf, tag ~1h
-# shelf book count ~3h
 # excel/txt export ~1h
 # wishlist ~1h
 # android app ~4h
