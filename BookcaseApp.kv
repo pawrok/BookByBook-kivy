@@ -308,31 +308,31 @@
                         id: input_title
                         book_property: root.title
                         label_txt: 'Title'
-                        hint_txt: 'title'
+                        # hint_txt: 'title'
 
                     BookTextInput:
                         id: input_author
                         book_property: root.author
                         label_txt: 'Author'
-                        hint_txt: 'author'
+                        # hint_txt: 'author'
 
                     BookTextInput:
                         id: input_category
                         book_property: root.category
                         label_txt: 'Category'
-                        hint_txt: 'category'
+                        # hint_txt: 'category'
 
                     BookTextInput:
                         id: input_rented_person
                         book_property: root.rented_person
                         label_txt: 'Rented to'
-                        hint_txt: "person's name"
+                        # hint_txt: "person's name"
 
                     BookTextInput:
                         id: input_date_completed
                         book_property: root.date_completed
                         label_txt: 'Date completed'
-                        hint_txt: 'date'
+                        # hint_txt: '0.00.0000'
 
                     BookTextInput:
                         id: input_pages
@@ -354,7 +354,7 @@
                         text_input_height: '66dp'
                         height: '99dp'
                         label_txt: 'Description and notes'
-                        hint_txt: 'description'
+                        # hint_txt: 'description'
                         book_property: root.description
                     Label:
                         size_hint: 1, None
@@ -563,6 +563,7 @@
         font_size: 15
         foreground_color: 0, 0, 0, 1
         text: root.book_property
+        # hint_text: hint_txt
 
 
 <StatsScreen@Screen>:
@@ -652,13 +653,129 @@
 
 <WishScreen@Screen>:
     name: "wish"
+
     BoxLayout:
+        orientation: 'vertical'
         canvas:
             Color:
                 rgb: 1, 1, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
+
+        Label:
+            text: 'Wishlist'
+            size_hint_y: None
+            height: '38dp'
+            font_size: '19sp'
+            color: utils.get_color_from_hex('#28527a')
+            canvas:
+                Color:
+                    rgba: utils.get_color_from_hex('#f4d160')
+                Line:
+                    points: self.pos[0] + 10, self.pos[1], self.pos[0] + self.size[0] - 10, self.pos[1]
+                    width: 1
+                    joint: 'miter'
+                    cap: 'none'
+
+        BoxLayout:
+            size_hint_y: None
+            height: '70dp'
+            padding: 5, 5
+
+            Label:
+                size_hint_x: None
+                width: '5dp'
+
+            BoxLayout:
+                orientation: 'vertical'
+
+                BoxLayout:
+                    canvas.after:
+                        Color:
+                            rgb: utils.get_color_from_hex('#000000')
+                        Line:
+                            points: self.pos[0] , self.pos[1], self.pos[0] + self.size[0] * 0.85, self.pos[1]
+
+                    Label:
+                        size_hint_x: None
+                        width: '5dp'
+                    
+                    TextInput:
+                        size_hint: 0.8, 1
+                        padding: 0, 4
+                        id: shelf_title_input
+                        multiline: False
+                        # focus: True
+                        background_active: ''
+                        background_color: 1, 1, 1, 1
+                        background_disabled_normal: ''
+                        background_normal: ''
+                        font_size: 15
+                        foreground_color: 0, 0, 0, 1
+                        hint_text: 'Title'
+
+                    Label:
+
+                Label:
+                    size_hint_y: None
+                    height: '2dp'
+
+                BoxLayout:
+                    canvas.after:
+                        Color:
+                            rgb: utils.get_color_from_hex('#000000')
+                        Line:
+                            points: self.pos[0] , self.pos[1], self.pos[0] + self.size[0] * 0.85, self.pos[1]
+
+                    Label:
+                        size_hint_x: None
+                        width: '5dp'
+                    
+                    TextInput:
+                        size_hint: 0.8, 1
+                        padding: 0, 4
+                        multiline: False
+                        # focus: True
+                        background_active: ''
+                        background_color: 1, 1, 1, 1
+                        background_disabled_normal: ''
+                        background_normal: ''
+                        font_size: 15
+                        foreground_color: 0, 0, 0, 1
+                        hint_text: 'Author'
+
+                    Button:
+                        id: add_btn
+                        background_normal: ''
+                        background_color: 1, 1, 1, 1
+                        size_hint_x: 0.10
+                        # on_press: shelf_viewer.add_shelf(shelf_title_input.text)
+
+                        Image:
+                            source: 'images/add.png'
+                            size: add_btn.width * 0.8, add_btn.height * 0.8
+                            pos: add_btn.x + add_btn.size[0] * 0.1, add_btn.y + add_btn.size[1] * 0.1
+
+            Label:
+                size_hint_x: None
+                width: '5dp'
+
+        # Label:
+        #     size_hint_y: 0.025
+
+        # TODO, wishlist viewer
+        Label:
+        # ShelfViewer:
+        #     id: shelf_viewer
+        #     size_hint_y: 1
+        #     viewclass: 'ShelfItem'
+        #     RecycleBoxLayout:
+        #         orientation: "vertical"
+        #         default_size: dp(100), dp(50)
+        #         default_size_hint: 1, None
+        #         size_hint_y: None
+        #         height: self.minimum_height
 
 <SettingsScreen@Screen>:
     name: "settings"
@@ -816,33 +933,24 @@
 
                         Button:
                             id: search_btn
-                            size_hint_x: 0.08
-                            background_normal: ''
-                            background_color: 1, 1, 1, 0
-                            on_press: root.parent.ids.books_screen.ids.book_scroll.search_title(search_input.text)
-                            
-                            Image:
-                                allow_stretch: True
-                                size: search_btn.width * 0.9, search_btn.height * 0.9
-                                source: 'images/search.png'
-                                # pos: search_btn.x + search_btn.size[0] * 0.3, search_btn.y + search_btn.size[1] * 0.15
-                                pos: search_btn.x, search_btn.y
-                        
-                        Button:
-                            id: sort_btn
-                            background_normal: ''
-                            background_color: 1, 1, 1, 0
                             size_hint_x: 0.12
-                            
+                            # background_normal: ''
+                            background_color: 1, 1, 1, 0
+                            on_press: root.parent.ids.books_screen.ids.book_scroll.search(search_input.text)
+
                             Image:
                                 allow_stretch: True
-                                size: sort_btn.width * 0.8, sort_btn.height * 0.8
-                                source: 'images/sort.png'
-                                pos: sort_btn.x + sort_btn.size[0] * 0.2, sort_btn.y + sort_btn.size[1] * 0.1
-                        
-                        Label:
-                            size_hint_x: None
-                            width: '5dp'
+                                size: search_btn.width * 0.8, search_btn.height * 0.8
+                                source: 'images/search.png'
+                                pos: search_btn.x + search_btn.size[0] * 0.1, search_btn.y + search_btn.size[1] * 0.1
+                                # pos: search_btn.x, search_btn.y
+
+                        # Label:
+                        #     size_hint_x: 0.03
+
+                        SortButton:
+                            id: sort_btn
+                            size_hint_x: 0.13
 
             BoxLayout:
                 padding: '6dp', '6dp', '6dp', '0dp'
@@ -860,6 +968,105 @@
                         cols: 3
                         size_hint_y: None
                         # height: 100
+
+<SortButton@BoxLayout>:
+    id: sort_btn
+    name: 'DropDown'
+    __safe_id: [dropdown.__self__]
+    canvas:
+        Color:
+            rgb: 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    Label:
+        size_hint_x: 0.1
+    Button:
+        id: st_btn
+        size_hint_x: 0.8
+        background_normal: ''
+        background_color: utils.get_color_from_hex('#ffffff')
+        on_release: dropdown.open(self)
+
+        Image:
+            id: r_img
+            source: 'images/sort.png'
+            size: st_btn.width * 0.8, st_btn.height * 0.8
+            # pos: st_btn.pos
+            pos: st_btn.x + st_btn.size[0] * 0.2, st_btn.y + st_btn.size[1] * 0.1
+
+    Widget:
+        on_parent: dropdown.dismiss()
+        size_hint_x: 0.1
+
+    DropDown:
+        id: dropdown
+
+        Button:
+            id: filter_fav
+            size_hint_y: None
+            # text: 'f. fav'
+            height: '35dp'
+            # width: '30dp'
+            background_normal: ''
+            background_color: 1, 1, 1, 1
+            on_release:
+                root.parent.parent.parent.parent.parent.parent.parent.ids.books_screen.ids.book_scroll.filter('is_fav')
+                dropdown.dismiss()
+            Image:
+                source: 'images/heart_red.png'
+                size: filter_fav.size
+                pos: filter_fav.pos
+
+        Button:
+            id: filter_rented
+            size_hint_y: None
+            # text: 'f. rent'
+            height: '35dp'
+            background_normal: ''
+            background_color: 1, 1, 1, 1
+            on_release:
+                root.parent.parent.parent.parent.parent.parent.parent.ids.books_screen.ids.book_scroll.filter('rented')
+                dropdown.dismiss()
+
+            Image:
+                source: 'images/delete2.png'
+                size: filter_rented.size
+                pos: filter_rented.pos
+
+        Button:
+            id: sort_date
+            size_hint_y: None
+            # text: 'f. rent'
+            height: '35dp'
+            background_normal: ''
+            background_color: 1, 1, 1, 1
+            on_release:
+                root.parent.parent.parent.parent.parent.parent.parent.ids.books_screen.ids.book_scroll.date_sort()
+                dropdown.dismiss()
+
+            Image:
+                source: 'images/delete2.png'
+                size: sort_date.size
+                pos: sort_date.pos
+
+        Button:
+            id: sort_pages
+            size_hint_y: None
+            # text: 'f. rent'
+            height: '35dp'
+            background_normal: ''
+            background_color: 1, 1, 1, 1
+            on_release:
+                root.parent.parent.parent.parent.parent.parent.parent.ids.books_screen.ids.book_scroll.pages_sort()
+                dropdown.dismiss()
+
+            Image:
+                source: 'images/delete2.png'
+                size: sort_pages.size
+                pos: sort_pages.pos
+
 
 <Shelves@Screen>:
     name: 'shelf'

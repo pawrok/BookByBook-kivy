@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 from collections import defaultdict
 import itertools
+from datetime import datetime
 
 import kivy
 from kivy.uix.button import Button
@@ -56,10 +57,7 @@ class ShelfViewer(RecycleView):
         book_count = 0
         books_data = SqliteDB.get_db_values('booktable')
         
-        # print(self.shelf)
         for item in books_data:
-            # print('shelf: ', item['shelves'], 'item: ', item['title'])
-
             if item['shelves'] and shelf in item['shelves']:
                 book_count += 1
         
@@ -79,7 +77,7 @@ class AddScreen(Screen):
     category = StringProperty("")
     rating = NumericProperty(0)
     rented_person = StringProperty("")
-    date_completed = StringProperty("")
+    date_completed = StringProperty(datetime.today().strftime('%d.%m.%Y'))
     pages = NumericProperty(0)
     book_id = NumericProperty(0)
     description = StringProperty("")
@@ -94,11 +92,15 @@ class AddScreen(Screen):
 
 class BookItem(BoxLayout):
     title = StringProperty()
+    author = StringProperty()
     cover = StringProperty()
     book_id = NumericProperty()
     shelves = StringProperty()
+    tags = StringProperty()
+    
+    sort_params = DictProperty({'category': '', 'date': ''})
 
-
+    filter_params = DictProperty({'is_fav': 0, 'rented': 0, 'pages': 0})
 
 class FavButton(Button):
     is_fav = NumericProperty(0)
@@ -351,6 +353,7 @@ class SmallShelfItem(BoxLayout):
 class BookGridLayout(GridLayout):
     deleted_books = []
     non_shelf_books = []
+    filtered_books = []
 
     def __init__(self, **kwargs):
         super(BookGridLayout, self).__init__(**kwargs)
@@ -363,19 +366,29 @@ class BookGridLayout(GridLayout):
             else:
                 book_cover = item['imageDest']
 
-            book = BookItem(book_id=item['book_id'], title=item['title'], cover=book_cover, shelves=item['shelves'])
+            sort_params = {'date': item['dateCompleted'],
+                           'pages': item['pageCount']}
+
+            filter_params = {'is_fav': item['isFav'],
+                             'rented': bool(item['rentedPerson'])}
+
+            book = BookItem(book_id=item['book_id'], title=item['title'],
+                            cover=book_cover, shelves=item['shelves'],
+                            tags=item['tags'], author=item['author'],
+                            sort_params=sort_params,
+                            filter_params=filter_params)
+
             self.add_widget(book)
             self.height += book.height / 3 + 10
 
-    def search_title(self, title_str):
-        
+    def search(self, search_str):
         for book in self.children:
-            if title_str not in book.title:
+            if search_str not in book.title or search_str not in book.author:
                 self.deleted_books.append(book)
 
         remove_from_del = []
         for book in self.deleted_books:
-            if title_str in book.title:
+            if search_str in book.title or search_str in book.author:
                 self.add_widget(book)
                 remove_from_del.append(book)
                 
@@ -394,15 +407,45 @@ class BookGridLayout(GridLayout):
         for b in self.non_shelf_books:
             self.remove_widget(b)
 
+    def pages_sort(self):
+        books = self.children.copy()
+        self.clear_widgets()
+
+        sorted_books = sorted(books, key=lambda x: x.sort_params['pages'])
+
+        for book in sorted_books:
+            self.add_widget(book)
+
+    def date_sort(self):
+        books = self.children.copy()
+        self.clear_widgets()
+
+        sorted_books = sorted(books, key=lambda x: datetime.strptime(x.sort_params['date'], '%d.%m.%Y'))
+
+        for book in sorted_books:
+            self.add_widget(book)
+
+    def filter(self, parameter):
+        for book in self.children:
+            if not book.filter_params[parameter]:
+                self.filtered_books.append(book)
+
+        for b in self.filtered_books:
+            self.remove_widget(b)
+
     def refresh_books(self):
         for book in self.non_shelf_books:
             self.add_widget(book)
 
         for book in self.deleted_books:
             self.add_widget(book)
+
+        for book in self.filtered_books:
+            self.add_widget(book)
         
         self.non_shelf_books = []
         self.deleted_books = []
+        self.filtered_books = []
 
 class BookcaseApp(App):
     def build(self):
