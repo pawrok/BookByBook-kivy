@@ -653,6 +653,7 @@
 
 <WishScreen@Screen>:
     name: "wish"
+    wish_viewer: wish_viewer
 
     BoxLayout:
         orientation: 'vertical'
@@ -704,7 +705,7 @@
                     TextInput:
                         size_hint: 0.8, 1
                         padding: 0, 4
-                        id: shelf_title_input
+                        id: title_input
                         multiline: False
                         # focus: True
                         background_active: ''
@@ -736,7 +737,7 @@
                         size_hint: 0.8, 1
                         padding: 0, 4
                         multiline: False
-                        # focus: True
+                        id: author_input
                         background_active: ''
                         background_color: 1, 1, 1, 1
                         background_disabled_normal: ''
@@ -750,7 +751,7 @@
                         background_normal: ''
                         background_color: 1, 1, 1, 1
                         size_hint_x: 0.10
-                        # on_press: shelf_viewer.add_shelf(shelf_title_input.text)
+                        on_press: wish_viewer.add_wish(title_input.text, author_input.text)
 
                         Image:
                             source: 'images/add.png'
@@ -764,18 +765,17 @@
         # Label:
         #     size_hint_y: 0.025
 
-        # TODO, wishlist viewer
-        Label:
-        # ShelfViewer:
-        #     id: shelf_viewer
-        #     size_hint_y: 1
-        #     viewclass: 'ShelfItem'
-        #     RecycleBoxLayout:
-        #         orientation: "vertical"
-        #         default_size: dp(100), dp(50)
-        #         default_size_hint: 1, None
-        #         size_hint_y: None
-        #         height: self.minimum_height
+        WishViewer:
+            id: wish_viewer
+            size_hint_y: 1
+            viewclass: 'WishItem'
+            RecycleBoxLayout:
+                orientation: "vertical"
+                default_size: dp(100), dp(50)
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
+
 
 <SettingsScreen@Screen>:
     name: "settings"
@@ -1509,6 +1509,52 @@
 
                 text: 'Cancel'
                 on_release: root.dismiss()
+
+
+<WishItem>:
+    orientation: 'horizontal'
+    padding: '5dp'
+
+    Label:
+        size_hint_x: None
+        width: '5dp'
+
+    BoxLayout:
+        # canvas.after:
+        #     Color:
+        #         rgb: utils.get_color_from_hex('#28527a')
+        #     Line:
+        #         rectangle: self.x, self.y, self.width, self.height
+        #         joint: 'miter'
+        #         cap: 'none'
+        size_hint_y: None
+        height: '30dp'
+
+        Label:
+            text: root.title + ' - ' + root.author
+            size_hint_x: 0.8
+            # background_normal: ''
+            # background_down: ''
+            background_color: utils.get_color_from_hex('#ffffff')
+            color: utils.get_color_from_hex('#28527a')
+            # on_press: root.open_shelf()
+
+        Button:
+            id: st_btn
+            size_hint_x: 0.2
+            background_normal: ''
+            background_color: utils.get_color_from_hex('#ffffff')
+            on_release: root.parent.parent.remove_wish(root.title, root.author)
+
+            Image:
+                id: r_img
+                source: 'images/delete2.png'
+                size: st_btn.size
+                pos: st_btn.pos
+
+    Label:
+        size_hint_x: None
+        width: '5dp'
 
 
 <Label>:

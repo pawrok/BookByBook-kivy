@@ -56,7 +56,8 @@ class SqliteDB:
             title, author, category, rating, rentedPerson,dateCompleted, 
             pageCount, isRead, imageDest, isFav, describtion, shelves, tags):
         
-        # set book_id to max(book_id) + 1; fetchone() sometimes haven't worked
+        # set book_id to max(book_id) + 1
+        # fetchone() sometimes haven't worked
         SqliteDB.c.execute("SELECT MAX(book_id) FROM booktable")
         max_dict = [dict(row) for row in SqliteDB.c.fetchall()]
         

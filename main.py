@@ -64,6 +64,21 @@ class ShelfViewer(RecycleView):
         return book_count
 
 
+class WishViewer(RecycleView):
+    def __init__(self, **kwargs):
+        super(WishViewer, self).__init__(**kwargs)
+        self.data = SqliteDB.get_db_values('wishlist')
+    
+    def add_wish(self, title, author):
+        if title and author:
+            SqliteDB.insert_to_wishlist(title, author)
+            self.data.append({'title': title, 'author': author})
+    
+    def remove_wish(self, title, author):
+            SqliteDB.del_value_from('wishlist', title, 'title')
+            self.data.remove({'title': title, 'author': author})
+
+
 class HomeButton(Button):
     line_color = ListProperty([1, 1, 1, 1], rebind=True)
 
@@ -166,6 +181,7 @@ class AddImageButton(Button):
             bottom = height
 
             cropped_img = original.crop((left, top, right, bottom))
+
         else:
             new_height = width * ratio
             to_cut = height - new_height
@@ -251,6 +267,11 @@ class ShelfItem(BoxLayout):
         test = App.get_running_app().root.ids['rootmanager']
         
         App.get_running_app().root.ids['rootmanager'].screens[index].middlemanager.books_screen.book_scroll.search_shelf(self.shelf)
+
+
+class WishItem(BoxLayout):
+    title = StringProperty()
+    author = StringProperty()
 
 
 class StatsScreen(Screen):
