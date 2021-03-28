@@ -382,18 +382,18 @@ class BookGridLayout(GridLayout):
             self.height += book.height / 3 + 10
 
     def search(self, search_str):
-        for book in self.children:
-            if search_str not in book.title or search_str not in book.author:
-                self.deleted_books.append(book)
-
         remove_from_del = []
         for book in self.deleted_books:
             if search_str in book.title or search_str in book.author:
-                self.add_widget(book)
                 remove_from_del.append(book)
+
+        for book in self.children:
+            if search_str not in book.title and search_str not in book.author:
+                self.deleted_books.append(book)
                 
         for b in remove_from_del:
             self.deleted_books.remove(b)
+            self.add_widget(b)
 
         for b in self.deleted_books:
             self.remove_widget(b)
@@ -420,7 +420,7 @@ class BookGridLayout(GridLayout):
         books = self.children.copy()
         self.clear_widgets()
 
-        sorted_books = sorted(books, key=lambda x: datetime.strptime(x.sort_params['date'], '%d.%m.%Y'))
+        sorted_books = sorted(books, key=lambda x: datetime.strptime(x.sort_params['date'], '%d.%m.%Y'), reverse=True)
 
         for book in sorted_books:
             self.add_widget(book)
@@ -538,7 +538,6 @@ if __name__ == '__main__':
 
 
 # TODO:
-# sort ~3h
 # tags ~1.5h
 # rename shelf, tag ~1h
 # excel/txt export ~1h
