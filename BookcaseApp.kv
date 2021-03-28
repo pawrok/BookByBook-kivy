@@ -1006,18 +1006,19 @@
         Button:
             id: filter_fav
             size_hint_y: None
+            # size_hint_x: None
             # text: 'f. fav'
             height: '35dp'
-            # width: '30dp'
+            # width: '50dp'
             background_normal: ''
             background_color: 1, 1, 1, 1
             on_release:
                 root.parent.parent.parent.parent.parent.parent.parent.ids.books_screen.ids.book_scroll.filter('is_fav')
                 dropdown.dismiss()
             Image:
-                source: 'images/heart_red.png'
-                size: filter_fav.size
-                pos: filter_fav.pos
+                source: 'images/heart.png'
+                size: filter_fav.width * 0.8, filter_fav.height * 0.8
+                pos: filter_fav.x + filter_fav.size[0] * 0.2, filter_fav.y + filter_fav.size[1] * 0.1
 
         Button:
             id: filter_rented
@@ -1031,9 +1032,9 @@
                 dropdown.dismiss()
 
             Image:
-                source: 'images/delete2.png'
-                size: filter_rented.size
-                pos: filter_rented.pos
+                source: 'images/user.png'
+                size: filter_rented.width * 0.8, filter_rented.height * 0.8
+                pos: filter_rented.x + filter_rented.size[0] * 0.2, filter_rented.y + filter_rented.size[1] * 0.1
 
         Button:
             id: sort_date
@@ -1047,9 +1048,9 @@
                 dropdown.dismiss()
 
             Image:
-                source: 'images/delete2.png'
-                size: sort_date.size
-                pos: sort_date.pos
+                source: 'images/calendar.png'
+                size: sort_date.width * 0.8, sort_date.height * 0.8
+                pos: sort_date.x + sort_date.size[0] * 0.2, sort_date.y + sort_date.size[1] * 0.1
 
         Button:
             id: sort_pages
@@ -1063,9 +1064,9 @@
                 dropdown.dismiss()
 
             Image:
-                source: 'images/delete2.png'
-                size: sort_pages.size
-                pos: sort_pages.pos
+                source: 'images/file.png'
+                size: sort_pages.width * 0.8, sort_pages.height * 0.8
+                pos: sort_pages.x + sort_pages.size[0] * 0.2, sort_pages.y + sort_pages.size[1] * 0.1
 
 
 <Shelves@Screen>:
