@@ -1367,22 +1367,6 @@
                     id: dropdown
 
                     Button:
-                        id: xx
-                        size_hint_y: None
-                        height: '30dp'
-                        # width: '30dp'
-                        background_normal: ''
-                        background_color: 1, 1, 1, 1
-                        on_release:
-                            Factory.RenamePopup().open(); \
-                            dropdown.dismiss()
-
-                        Image:
-                            source: 'images/edit2.png'
-                            size: xx.size
-                            pos: xx.pos
-
-                    Button:
                         id: del_btn
                         size_hint_y: None
                         height: '30dp'
@@ -1461,54 +1445,6 @@
         Label:
             size_hint_x: None
             width: '5dp'
-
-
-<RenamePopup@Popup>:
-    auto_dismiss: True
-    title: 'Rename'
-    rename_input: rename_input
-    size_hint: None, None
-    size: 180, 200
-    pos_hint: {'top': 1}
-    separator_color: 110./255, 161./255, 240./255
-    # title_font: 'Amatic.ttf'
-    # title_size: 32
-    background: ''
-    background_color: 0, 0, 0, 1
-
-    BoxLayout:
-        orientation: 'vertical'
-
-        TextInput:
-            id: rename_input
-            write_tab: False
-            multiline: False
-            focus: True
-            background_active: ''
-            background_color: 0, 0, 0, 1
-            background_disabled_normal: ''
-            background_normal: ''
-            font_size: 15
-            foreground_color: 1, 1, 1, 1
-            hint_text: 'New collector name...'
-
-        BoxLayout:
-
-            Button:
-                background_normal: ''
-                background_color: 0, 0, 0, 1
-
-                text: 'Apply'
-                on_release:
-                    app.rename_tracker(root.tr_id, rename_input.text); \
-                    root.dismiss()
-
-            Button:
-                background_normal: ''
-                background_color: 0, 0, 0, 1
-
-                text: 'Cancel'
-                on_release: root.dismiss()
 
 
 <WishItem>:

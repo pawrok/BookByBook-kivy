@@ -21,11 +21,11 @@ from kivy.uix.recycleview import RecycleView
 from kivy.properties import ListProperty, StringProperty, NumericProperty, DictProperty
 from kivy.uix.screenmanager import Screen
 from kivy.config import Config
+Config.set('graphics', 'width', '350')
+Config.set('graphics', 'height', '660')
 from kivy.graphics import *
 from kivy.utils import get_color_from_hex
 
-Config.set('graphics', 'width', '350')
-Config.set('graphics', 'height', '660')
 dst_dir = os.getcwd() + "\\book_covers\\"
 
 
@@ -50,8 +50,10 @@ class ShelfViewer(RecycleView):
             self.data.append({'shelf': shelf_title})
     
     def remove_shelf(self, shelf_title):
+            for item in self.data:
+                if item['shelf'] == shelf_title:
+                    self.data.remove(item)
             SqliteDB.del_value_from('shelves', shelf_title, 'shelf')
-            self.data.remove({'shelf': shelf_title})
     
     def count_shelf_books(self, shelf):
         book_count = 0
@@ -560,7 +562,5 @@ if __name__ == '__main__':
 
 # TODO:
 # tags ~1.5h
-# rename shelf, tag ~1h
 # excel/txt export ~1h
-# wishlist ~1h
 # android app ~4h
