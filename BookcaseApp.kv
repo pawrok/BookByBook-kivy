@@ -55,7 +55,9 @@
 
         BottomButton:
             btn_text: 'Stats'
-            on_release: rootmanager.current = 'stats'
+            on_release:
+                app.add_stats_screen()
+                rootmanager.current = 'stats'
             btn_source: 'images/diploma.png'
 
         BottomButton:
@@ -696,6 +698,10 @@
                     CircleLabel:
                         some_text: str(root.top_authors[2][1])
 
+                Label:
+                    size_hint_x: None
+                    width: '6dp'
+                
                 BoxLayout:
                     orientation: 'vertical'
                     size_hint_x: None
@@ -704,20 +710,23 @@
                     Label:
                         text: str(root.top_authors[0][0])
                         color: 0.5, 0.5, 0.5
-                        # halign: 'left'
-                        # text_size: self.size
+                        halign: 'left'
+                        valign: 'middle'
+                        text_size: self.size
 
                     Label:
                         text: str(root.top_authors[1][0])
                         color: 0.5, 0.5, 0.5
-                        # halign: 'left'
-                        # text_size: self.size
+                        halign: 'left'
+                        valign: 'middle'
+                        text_size: self.size
 
                     Label:
                         text: str(root.top_authors[2][0])
                         color: 0.5, 0.5, 0.5
-                        # halign: 'left'
-                        # text_size: self.size
+                        halign: 'left'
+                        valign: 'middle'
+                        text_size: self.size
 
                 Label:
 

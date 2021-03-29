@@ -11,6 +11,11 @@ from collections import defaultdict
 import itertools
 from datetime import datetime
 
+from kivy.config import Config
+Config.set('graphics', 'width', '350')
+Config.set('graphics', 'height', '660')
+Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
+
 import kivy
 from kivy.uix.button import Button
 from kivy.app import App
@@ -18,15 +23,13 @@ from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.recycleview import RecycleView 
-from kivy.properties import ListProperty, StringProperty, NumericProperty, DictProperty
+from kivy.properties import ListProperty, StringProperty, NumericProperty, \
+                            DictProperty
 from kivy.uix.screenmanager import Screen
-from kivy.config import Config
-Config.set('graphics', 'width', '350')
-Config.set('graphics', 'height', '660')
-from kivy.graphics import *
 from kivy.utils import get_color_from_hex
+from kivy.graphics import *
 
-dst_dir = os.getcwd() + "\\book_covers\\"
+DST_DIR = os.getcwd() + "\\book_covers\\"
 
 
 class RootWidget(BoxLayout):
@@ -185,7 +188,7 @@ class AddImageButton(Button):
 
         self.crop_and_resize(path, book_id)
         
-        self.imageDest = dst_dir + str(book_id) + '.jpg'
+        self.imageDest = DST_DIR + str(book_id) + '.jpg'
         self.children[0].source = self.imageDest
     
     def load_book_image(self, path):
@@ -228,7 +231,7 @@ class AddImageButton(Button):
         cropped_img.thumbnail(size)
 
         cropped_img = cropped_img.convert('RGB')
-        cropped_img.save(dst_dir + str(book_id) + '.jpg')
+        cropped_img.save(DST_DIR + str(book_id) + '.jpg')
 
 
 class ReadButton(Button):
@@ -325,9 +328,9 @@ class StatsScreen(Screen):
     top_authors = ListProperty()
 
     def __init__(self, **kwargs):
-        super(StatsScreen, self).__init__(**kwargs)
         self.plot_data()
         self.top_authors = self.find_top_authors()
+        super(StatsScreen, self).__init__(**kwargs)
     
     def find_top_authors(self):
         books_data = SqliteDB.get_db_values('booktable')
@@ -563,6 +566,14 @@ class BookcaseApp(App):
         self.root.ids['rootmanager'].remove_widget(self.root.ids.rootmanager.screens[index])
         self.root.ids['rootmanager'].add_widget(AddScreen())
 
+    def add_stats_screen(self):
+        index = 0
+        for i in range(len(self.root.ids.rootmanager.screen_names)):
+            if self.root.ids.rootmanager.screen_names[i].find('stats') != -1:
+                index = i
+        
+        self.root.ids['rootmanager'].remove_widget(self.root.ids.rootmanager.screens[index])
+        self.root.ids['rootmanager'].add_widget(StatsScreen())
 
     def open_edit_book(self, book_id):
         for i in range(len(self.root.ids.rootmanager.screen_names)):
@@ -642,13 +653,9 @@ if __name__ == '__main__':
 # android app ~4h
 
 # more TODO:
-# dots after too long titles
 # increase stars from 4 to 5
 # text input clearance after usage
 # small visual bugs
 # file viewer bug
 # plots?
-# fix top authors
-# red dots
-# refresh stats in app
-# settings
+# dots after too long titles
