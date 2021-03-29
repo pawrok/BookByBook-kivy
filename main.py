@@ -263,30 +263,15 @@ class StarsButton(BoxLayout):
     rating = NumericProperty()
 
     def set_rating(self, value):
-        if value == 1:
-            self.ids['first_s'].children[0].source = 'images/star_full.png'
-            self.ids['sec_s'].children[0].source = 'images/star.png'
-            self.ids['third_s'].children[0].source = 'images/star.png'
-            self.ids['fourth_s'].children[0].source = 'images/star.png'
-            self.rating = 1
-        elif value == 2:
-            self.ids['first_s'].children[0].source = 'images/star_full.png'
-            self.ids['sec_s'].children[0].source = 'images/star_full.png'
-            self.ids['third_s'].children[0].source = 'images/star.png'
-            self.ids['fourth_s'].children[0].source = 'images/star.png'
-            self.rating = 2
-        elif value == 3:
-            self.ids['first_s'].children[0].source = 'images/star_full.png'
-            self.ids['sec_s'].children[0].source = 'images/star_full.png'
-            self.ids['third_s'].children[0].source = 'images/star_full.png'
-            self.ids['fourth_s'].children[0].source = 'images/star.png'
-            self.rating = 3
-        elif value == 4:
-            self.ids['first_s'].children[0].source = 'images/star_full.png'
-            self.ids['sec_s'].children[0].source = 'images/star_full.png'
-            self.ids['third_s'].children[0].source = 'images/star_full.png'
-            self.ids['fourth_s'].children[0].source = 'images/star_full.png'
-            self.rating = 4
+        btn_ids = ['first_s', 'sec_s', 'third_s', 'fourth_s', 'fifth_s']
+        
+        for i in range(value):
+            self.ids[btn_ids[i]].children[0].source = 'images/star_full.png'
+        
+        for j in range(value, 5):
+            self.ids[btn_ids[j]].children[0].source = 'images/star.png'
+        
+        self.rating = value
 
 
 class ShelfItem(BoxLayout):
@@ -530,6 +515,7 @@ class BookGridLayout(GridLayout):
         self.deleted_books = []
         self.filtered_books = []
 
+
 class BookcaseApp(App):
     def build(self):
         self.title = 'BookByBook'
@@ -653,7 +639,6 @@ if __name__ == '__main__':
 # android app ~4h
 
 # more TODO:
-# increase stars from 4 to 5
 # small visual bugs
 # file viewer bug
 # plots?

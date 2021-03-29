@@ -992,6 +992,20 @@
             source: 'images/star.png'
             pos: fourth_s.pos
 
+    Button:
+        id: fifth_s
+        size_hint_y: 0.8
+        background_normal: ''
+        background_color: 1, 1, 1, 1
+        color: 0, 0, 0, 1
+        on_press:
+            root.set_rating(5)
+        Image:
+            allow_stretch: True
+            size: fifth_s.size
+            source: 'images/star.png'
+            pos: fifth_s.pos
+
 # ----------------------- home screens ------------------------- #
 
 <MiddleScreenManager@ScreenManager>:
