@@ -171,6 +171,8 @@
                     id: tags
                     text: 'Tags'
                     on_release:
+                        middlemanager.current = 'book'; \
+                        middlemanager.current_screen.book_scroll.refresh_books(); \
                         middlemanager.current = 'tag'; \
                         self.set_underline(utils.get_color_from_hex('#28527a')); \
                         shelf.set_underline([0, 0, 0, 0]); \
@@ -344,7 +346,7 @@
                         label_txt: 'Shelves'
                         hint_txt: '(select shelves to add)'
 
-                    SelectTextInput:
+                    SelectTextInputTags:
                         id: tags_input
                         label_txt: 'Tags'
                         hint_txt: '(select tags to add)'
@@ -400,7 +402,6 @@
 
 <SelectTextInput@BoxLayout>
     drop_down_shelf_viewer: drop_down_shelf_viewer
-    test: test
     label_txt: ''
     hint_txt: ''
     book_property: ''
@@ -502,23 +503,107 @@
                         height: self.minimum_height
 
 
+<SelectTextInputTags@BoxLayout>
+    drop_down_shelf_viewer: drop_down_shelf_viewer
+    label_txt: ''
+    hint_txt: ''
+    book_property: ''
+    orientation: 'vertical'
+    size_hint_y: None
+    height: '63dp'
+    canvas.after:
+        Color:
+            rgb: 0, 0, 0, 1
+        Line:
+            points: self.pos[0] + 6 , self.pos[1], self.pos[0] + self.size[0] - 6, self.pos[1]
 
-                # Button:
-                #     id: xx
-                #     size_hint_y: None
-                #     height: 31
-                #     text: "select"
-                #     # width: 40
-                #     background_normal: ''
-                #     background_color: 0, 0, 0, 1
-                #     on_release:
-                #         Factory.RenamePopup(root.ID).open(); \
-                #         dropdown.dismiss()
+    Label:
+        height: '6dp'
+        size_hint_y: None
 
-                    # Image:
-                    #     source: 'icons/edit2.png'
-                    #     size: xx.size
-                    #     pos: xx.pos
+    BoxLayout:
+        height: '27dp'
+        orientation: 'horizontal'
+        size_hint_y: None
+        Label:
+            size_hint_x: None
+            width: '6dp'
+        Label:
+            text: root.label_txt
+            text_size: self.size
+            halign: 'left'
+            color: 0.4, 0.4, 0.4, 1
+
+    BoxLayout:
+        height: '30dp'
+        name: 'DropDown'
+        id: drop_box
+        __safe_id: [dropdown.__self__]
+
+        Label:
+            size_hint_x: None
+            width: '6dp'
+            background_normal: ''
+            background_color: 1, 0, 1, 1
+
+        Button:
+            size_hint_x: 1
+            id: st_btn
+            background_normal: ''
+            background_color: 1, 1, 1, 1
+            on_release: dropdown.open(self)
+
+            BoxLayout:
+                pos: self.parent.pos
+                size: self.parent.size
+                orientation: 'horizontal'
+
+                Label:
+                    text: root.hint_txt
+                    text_size: self.size
+                    halign: 'left'
+                    color: 0.4, 0.4, 0.4, 1
+                    size_hint: 1, 1
+
+                Image:
+                    id: r_img
+                    source: 'images/down-arrow.png'
+                    size_hint: None, 0.5
+                    width: '32dp'
+
+        Widget:
+            on_parent: dropdown.dismiss()
+            size_hint_x: 0
+
+        DropDown:
+            id: dropdown
+
+            BoxLayout:
+                id: test
+                size_hint: 1, None
+                height: '70dp'
+                # width: '180dp'
+                canvas:
+                    Color:
+                        rgb: utils.get_color_from_hex('#ffffff')
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                TagViewer:
+                    id: drop_down_shelf_viewer
+                    size_hint_y: 1
+                    viewclass: 'SmallTagItem'
+                    RecycleBoxLayout:
+                        orientation: "vertical"
+                        default_size: None, dp(33)
+                        # col_default_width: self.width / 4
+                        # default_size_hint: None, None
+                        # size_hint_y: None
+                        # spacing: dp(2)
+                        default_size_hint: 1, None
+                        size_hint_y: None
+                        height: self.minimum_height
 
 
 <BookTextInput@BoxLayout>:
@@ -1223,7 +1308,7 @@
                 TextInput:
                     size_hint: 0.8, 1
                     padding: 0, 4
-                    id: tracker_name_input
+                    id: tag_title_input
                     multiline: False
                     # focus: True
                     background_active: ''
@@ -1239,13 +1324,13 @@
                     background_normal: ''
                     background_color: 1, 1, 1, 1
                     size_hint_x: 0.10
-                    # on_press: app.create_new_tracker(tracker_name_input.text)
+                    on_press: tag_viewer.add_tag(tag_title_input.text)
 
                     Image:
                         source: 'images/add.png'
                         size: add_btn.width * 0.8, add_btn.height * 0.8
                         pos: add_btn.x + add_btn.size[0] * 0.1, add_btn.y + add_btn.size[1] * 0.1
-                
+
                 # Label:
                 #     size_hint_x: None
                 #     width: '5dp'
@@ -1257,26 +1342,26 @@
         Label:
             size_hint_y: 0.025
 
-        # ShelfViewer:
-        #     size_hint_y: 0.87
-        #     # data: app.data
-        #     # spacing: 800
-        #     # padding: 300, 300
-        #     viewclass: 'ShelfItem'
-        #     # space_x: self.size[0]/3
-        #     # orientation: "vertical"
-        #     RecycleBoxLayout:
-        #         orientation: "vertical"
-        #         default_size: dp(100), dp(50)
-        #         # col_default_width: self.width / 4
-        #         # default_size_hint: None, None
-        #         # size_hint_y: None
-        #         # spacing: dp(2)
-        #         default_size_hint: 1, None
-        #         size_hint_y: None
-        #         height: self.minimum_height
+        TagViewer:
+            id: tag_viewer
+            size_hint_y: 0.87
+            # data: app.data
+            # spacing: 800
+            # padding: 300, 300
+            viewclass: 'TagItem'
+            # space_x: self.size[0]/3
+            # orientation: "vertical"
+            RecycleBoxLayout:
+                orientation: "vertical"
+                default_size: dp(100), dp(50)
+                # col_default_width: self.width / 4
+                # default_size_hint: None, None
+                # size_hint_y: None
+                # spacing: dp(2)
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
 
-# widgets for MiddleScreenManager
 
 <BookItem>:
     height: self.width * 1.5
@@ -1306,7 +1391,6 @@
         # split_str: ' '
 
 <ShelfItem>:
-
     BoxLayout:
         orientation: 'horizontal'
         padding: '5dp'
@@ -1381,11 +1465,89 @@
                             size: del_btn.size
                             pos: del_btn.pos
 
+        Label:
+            size_hint_x: None
+            width: '5dp'
+
+
+<TagItem>:
+    BoxLayout:
+        orientation: 'horizontal'
+        padding: '5dp'
 
         Label:
             size_hint_x: None
             width: '5dp'
 
+        BoxLayout:
+            canvas.after:
+                Color:
+                    rgb: utils.get_color_from_hex('#28527a')
+                Line:
+                    rectangle: self.x, self.y, self.width, self.height
+                    joint: 'miter'
+                    cap: 'none'
+            size_hint_y: None
+            height: '30dp'
+
+            Button:
+                text: root.tag
+                size_hint_x: 0.7
+                background_normal: ''
+                background_down: ''
+                background_color: utils.get_color_from_hex('#ffffff')
+                color: utils.get_color_from_hex('#28527a')
+                on_press: root.open_tag()
+
+            Label:
+                size_hint_x: 0.1
+                text: str(root.book_count)
+                color: 0.5, 0.5, 0.5, 1
+
+            BoxLayout:
+                size_hint_x: None
+                width: '30dp'
+                name: 'DropDown'
+                __safe_id: [dropdown.__self__]
+
+                Button:
+                    id: st_btn
+                    size_hint_x: 0.5
+                    background_normal: ''
+                    background_color: utils.get_color_from_hex('#ffffff')
+                    on_release: dropdown.open(self)
+
+                    Image:
+                        id: r_img
+                        source: 'images/menu.png'
+                        size: st_btn.size
+                        pos: st_btn.pos
+
+                Widget:
+                    on_parent: dropdown.dismiss()
+                    size_hint_x: 0.5
+
+                DropDown:
+                    id: dropdown
+
+                    Button:
+                        id: del_btn
+                        size_hint_y: None
+                        height: '30dp'
+                        background_normal: ''
+                        background_color: 1, 1, 1, 1
+                        on_release:
+                            root.parent.parent.remove_tag(root.tag); \
+                            dropdown.dismiss()
+
+                        Image:
+                            source: 'images/delete2.png'
+                            size: del_btn.size
+                            pos: del_btn.pos
+
+        Label:
+            size_hint_x: None
+            width: '5dp'
 
 <SmallShelfItem>:
     checbox_img_widget: checbox_img_widget
@@ -1446,6 +1608,65 @@
             size_hint_x: None
             width: '5dp'
 
+
+<SmallTagItem>:
+    checbox_img_widget: checbox_img_widget
+
+    BoxLayout:
+        orientation: 'horizontal'
+
+        Label:
+            size_hint_x: None
+            width: '5dp'
+
+        BoxLayout:
+            height: '32dp'
+            size_hint_y: None
+
+            canvas.after:
+                Color:
+                    rgb: utils.get_color_from_hex('#28527a')
+                Line:
+                    rectangle: self.x, self.y, self.width, self.height
+                    joint: 'miter'
+                    cap: 'none'
+
+            Button:
+                size_hint_x: 0.8
+                text: root.tag
+                background_normal: ''
+                background_color: utils.get_color_from_hex('#ffffff')
+                color: utils.get_color_from_hex('#28527a')
+                on_release:
+                    if checbox_img_widget.source == 'images/checkbox_empty.png':\
+                    app.set_tags(root.tag); \
+                    checbox_img_widget.source = 'images/checkbox.png'
+                    else: \
+                    app.set_tags(root.tag); \
+                    checbox_img_widget.source = 'images/checkbox_empty.png'
+
+            Button:
+                id: st_btn
+                size_hint_x: 0.2
+                background_normal: ''
+                background_color: utils.get_color_from_hex('#ffffff')
+                on_release:
+                    if checbox_img_widget.source == 'images/checkbox_empty.png':\
+                    app.set_tags(root.tag); \
+                    checbox_img_widget.source = 'images/checkbox.png'
+                    else: \
+                    app.set_tags(root.tag); \
+                    checbox_img_widget.source = 'images/checkbox_empty.png'
+
+                Image:
+                    id: checbox_img_widget
+                    source: root.checkbox_img
+                    size: st_btn.width * 0.5, st_btn.height * 0.5
+                    pos: st_btn.x + st_btn.size[0] * 0.25, st_btn.y + st_btn.size[1] * 0.25
+
+        Label:
+            size_hint_x: None
+            width: '5dp'
 
 <WishItem>:
     orientation: 'horizontal'

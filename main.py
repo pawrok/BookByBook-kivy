@@ -58,12 +58,42 @@ class ShelfViewer(RecycleView):
     def count_shelf_books(self, shelf):
         book_count = 0
         books_data = SqliteDB.get_db_values('booktable')
-        
+
         for item in books_data:
             if item['shelves'] and shelf in item['shelves']:
                 book_count += 1
-        
+
         return book_count
+
+
+class TagViewer(RecycleView):
+    def __init__(self, **kwargs):
+        super(TagViewer, self).__init__(**kwargs)
+        self.data = SqliteDB.get_db_values('tags')
+        for tag_dict in self.data:
+            tag_dict['book_count'] = self.count_tag_books(tag_dict['tag'])
+
+    def add_tag(self, tag_title):
+        if tag_title:
+            SqliteDB.insert_to('tags', tag_title)
+            self.data.append({'tag': tag_title})
+    
+    def remove_tag(self, tag_title):
+            for item in self.data:
+                if item['tag'] == tag_title:
+                    self.data.remove(item)
+            SqliteDB.del_value_from('tags', tag_title, 'tag')
+    
+    def count_tag_books(self, tag):
+        book_count = 0
+        books_data = SqliteDB.get_db_values('booktable')
+
+        for item in books_data:
+            if item['tags'] and tag in item['tags']:
+                book_count += 1
+
+        return book_count
+
 
 
 class WishViewer(RecycleView):
@@ -271,6 +301,21 @@ class ShelfItem(BoxLayout):
         App.get_running_app().root.ids['rootmanager'].screens[index].middlemanager.books_screen.book_scroll.search_shelf(self.shelf)
 
 
+class TagItem(BoxLayout):
+    tag = StringProperty()
+    book_count = NumericProperty(0)
+    
+    def open_tag(self):
+        for i in range(len(App.get_running_app().root.ids.rootmanager.screen_names)):
+            if App.get_running_app().root.ids.rootmanager.screen_names[i].find('home') != -1:
+                index = i
+
+        App.get_running_app().root.ids['rootmanager'].screens[index].middlemanager.current = 'book'
+        test = App.get_running_app().root.ids['rootmanager']
+        
+        App.get_running_app().root.ids['rootmanager'].screens[index].middlemanager.books_screen.book_scroll.search_tag(self.tag)
+
+
 class WishItem(BoxLayout):
     title = StringProperty()
     author = StringProperty()
@@ -373,6 +418,11 @@ class SmallShelfItem(BoxLayout):
     checkbox_img = StringProperty('images/checkbox_empty.png')
 
 
+class SmallTagItem(BoxLayout):
+    tag = StringProperty()
+    checkbox_img = StringProperty('images/checkbox_empty.png')
+
+
 class BookGridLayout(GridLayout):
     deleted_books = []
     non_shelf_books = []
@@ -423,8 +473,15 @@ class BookGridLayout(GridLayout):
 
     def search_shelf(self, shelf_str):
         for book in self.children:
-            test = book
             if shelf_str not in book.shelves:
+                self.non_shelf_books.append(book)
+
+        for b in self.non_shelf_books:
+            self.remove_widget(b)
+
+    def search_tag(self, tag_str):
+        for book in self.children:
+            if tag_str not in book.tags:
                 self.non_shelf_books.append(book)
 
         for b in self.non_shelf_books:
@@ -541,19 +598,33 @@ class BookcaseApp(App):
         else:
             self.root.ids['rootmanager'].screens[4].shelves.remove(shelf)
 
+    def set_tags(self, tag):
+        if tag not in self.root.ids['rootmanager'].screens[4].tags:
+            self.root.ids['rootmanager'].screens[4].tags.append(tag)
+        else:
+            self.root.ids['rootmanager'].screens[4].tags.remove(tag)
+
     def load_shelves_checkboxes(self):
         for i in range(len(self.root.ids.rootmanager.screen_names)):
             if self.root.ids.rootmanager.screen_names[i].find('new') != -1:
                 index = i
 
         shelves = ';'.join(self.root.ids['rootmanager'].screens[index].shelves)
+        tags = ';'.join(self.root.ids['rootmanager'].screens[index].tags)
         shelves_data = self.root.ids['rootmanager'].screens[4].ids['shelf_input'].ids['drop_down_shelf_viewer'].data
+        tags_data = self.root.ids['rootmanager'].screens[4].ids['tags_input'].ids['drop_down_shelf_viewer'].data
         
         for shelf_dict in shelves_data:
             if shelf_dict['shelf'] in shelves:
                 shelf_dict['checkbox_img'] = 'images/checkbox.png'
             else:
                 shelf_dict['checkbox_img'] = 'images/checkbox_empty.png'
+
+        for tag_dict in tags_data:
+            if tag_dict['tag'] in tags:
+                tag_dict['checkbox_img'] = 'images/checkbox.png'
+            else:
+                tag_dict['checkbox_img'] = 'images/checkbox_empty.png'
 
 
 if __name__ == '__main__':
