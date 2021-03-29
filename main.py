@@ -626,12 +626,29 @@ class BookcaseApp(App):
             else:
                 tag_dict['checkbox_img'] = 'images/checkbox_empty.png'
 
+    def export_book_data(self):
+        books_data = SqliteDB.get_db_values('booktable')
+
+        with open('book_list.txt', 'w') as txt_file:
+            for book in books_data:
+                txt_file.write(book['title'] + ' - ' + book['author'] + '\n')
+
 
 if __name__ == '__main__':
     BookcaseApp().run()
 
 
 # TODO:
-# tags ~1.5h
-# excel/txt export ~1h
 # android app ~4h
+
+# more TODO:
+# dots after too long titles
+# increase stars from 4 to 5
+# text input clearance after usage
+# small visual bugs
+# file viewer bug
+# plots?
+# fix top authors
+# red dots
+# refresh stats in app
+# settings

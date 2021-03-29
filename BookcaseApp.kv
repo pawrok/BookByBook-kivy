@@ -864,18 +864,63 @@
 
 <SettingsScreen@Screen>:
     name: "settings"
+
     BoxLayout:
+        orientation: 'vertical'
         canvas:
             Color:
                 rgb: 1, 1, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
-        Button:
-            text: "DELETE ALL BOOKS"
-            on_press: root.delete_DB()
-        Button:
-            text: "todo - export to excel"
+
+        Label:
+            text: 'Settings'
+            size_hint_y: None
+            height: '38dp'
+            font_size: '19sp'
+            color: utils.get_color_from_hex('#28527a')
+            canvas:
+                Color:
+                    rgba: utils.get_color_from_hex('#f4d160')
+                Line:
+                    points: self.pos[0] + 10, self.pos[1], self.pos[0] + self.size[0] - 10, self.pos[1]
+                    width: 1
+                    joint: 'miter'
+                    cap: 'none'
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: '50dp'
+            padding: 5, 5
+
+            BoxLayout:
+                orientation: 'horizontal'
+                Label:
+                    size_hint_x: 0.25
+
+                Button:
+                    size_hint_x: 0.5
+                    text: "Export list of books"
+                    on_press: app.export_book_data()
+                    background_normal: ''
+                    # background_down: ''
+                    background_color: utils.get_color_from_hex('#ffffff')
+                    color: utils.get_color_from_hex('#28527a')
+                    canvas.after:
+                        Color:
+                            rgb: utils.get_color_from_hex('#28527a')
+                        Line:
+                            rectangle: self.x, self.y, self.width, self.height
+                            joint: 'miter'
+                            cap: 'none'
+
+                Label:
+                    size_hint_x: 0.25
+        
+        Label:
+
 
 <StarsButton>:
     orientation: 'horizontal'
