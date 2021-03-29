@@ -654,7 +654,6 @@ if __name__ == '__main__':
 
 # more TODO:
 # increase stars from 4 to 5
-# text input clearance after usage
 # small visual bugs
 # file viewer bug
 # plots?

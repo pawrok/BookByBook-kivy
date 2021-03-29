@@ -1358,7 +1358,7 @@
                 Label:
                     size_hint_x: None
                     width: '5dp'
-                
+
                 TextInput:
                     size_hint: 0.8, 1
                     padding: 0, 4
@@ -1378,7 +1378,9 @@
                     background_normal: ''
                     background_color: 1, 1, 1, 1
                     size_hint_x: 0.10
-                    on_press: tag_viewer.add_tag(tag_title_input.text)
+                    on_press:
+                        tag_viewer.add_tag(tag_title_input.text);\
+                        tag_title_input=''
 
                     Image:
                         source: 'images/add.png'
@@ -1770,3 +1772,6 @@
 
 <Label>:
     color: 0, 0, 0
+
+<TextInput>:
+    on_focus: self.text = ""
