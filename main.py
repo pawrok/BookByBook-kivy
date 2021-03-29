@@ -2,7 +2,7 @@ from sqliteDB import SqliteDB
 from plyer import filechooser
 from shutil import copyfile
 from PIL import Image
-from random import randint
+from random import choices
 import re
 import os.path
 import matplotlib.pyplot as plt
@@ -10,6 +10,7 @@ import matplotlib as mpl
 from collections import defaultdict
 import itertools
 from datetime import datetime
+import string
 
 from kivy.config import Config
 Config.set('graphics', 'width', '350')
@@ -174,7 +175,7 @@ class FavButton(Button):
 
 class AddImageButton(Button):
     imageDest = StringProperty('')
-    
+
     def add_book_image(self, book_id):
         try:
             path = filechooser.open_file(title="Pick a book cover ...", 
@@ -182,13 +183,12 @@ class AddImageButton(Button):
         except IndexError:
             return 0
         
-        # TODO: save img as temp.jpg, then after book's save change it to id.jpg
-        if book_id == 0:
-            book_id = randint(9999, 999999)
+        random_name = ''.join(choices(string.ascii_uppercase + string.digits,
+                              k=12))
 
-        self.crop_and_resize(path, book_id)
+        self.crop_and_resize(path, random_name)
         
-        self.imageDest = DST_DIR + str(book_id) + '.jpg'
+        self.imageDest = DST_DIR + random_name + '.jpg'
         self.children[0].source = self.imageDest
     
     def load_book_image(self, path):
@@ -199,7 +199,7 @@ class AddImageButton(Button):
         
         self.children[0].source = self.imageDest
     
-    def crop_and_resize(self, img_path, book_id):
+    def crop_and_resize(self, img_path, random_name):
         ratio = 475 / 300   # height / width
         size = (300, 475)
 
@@ -231,7 +231,7 @@ class AddImageButton(Button):
         cropped_img.thumbnail(size)
 
         cropped_img = cropped_img.convert('RGB')
-        cropped_img.save(DST_DIR + str(book_id) + '.jpg')
+        cropped_img.save(DST_DIR + random_name + '.jpg')
 
 
 class ReadButton(Button):
