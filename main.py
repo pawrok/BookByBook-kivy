@@ -527,7 +527,8 @@ class BookcaseApp(App):
         return self.root
 
     def format_book_title(self, book_title):
-        book_title = book_title[:24]
+        if len(book_title) > 24:
+            book_title = book_title[:24] + '...'
         
         if book_title.count(' ') > 1:
             return book_title[:8] + book_title[8:].replace(' ', '\n', 1)
@@ -642,4 +643,3 @@ if __name__ == '__main__':
 # small visual bugs
 # file viewer bug
 # plots?
-# dots after too long titles
