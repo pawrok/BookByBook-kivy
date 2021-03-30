@@ -1,5 +1,6 @@
 from sqliteDB import SqliteDB
 from plyer import filechooser
+import plyer
 from shutil import copyfile
 from PIL import Image
 from random import choices
@@ -177,6 +178,7 @@ class AddImageButton(Button):
     imageDest = StringProperty('')
 
     def add_book_image(self, book_id):
+        print(plyer.utils.platform)
         try:
             path = filechooser.open_file(title="Pick a book cover ...", 
                                          filters=[("*")])[0]
@@ -627,7 +629,7 @@ class BookcaseApp(App):
     def export_book_data(self):
         books_data = SqliteDB.get_db_values('booktable')
 
-        with open('book_list.txt', 'w') as txt_file:
+        with open('book_list.txt', 'w', encoding="utf-8") as txt_file:
             for book in books_data:
                 txt_file.write(book['title'] + ' - ' + book['author'] + '\n')
 
@@ -641,5 +643,4 @@ if __name__ == '__main__':
 
 # more TODO:
 # small visual bugs
-# file viewer bug
 # plots?
