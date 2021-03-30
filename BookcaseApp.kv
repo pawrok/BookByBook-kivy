@@ -845,7 +845,10 @@
                         background_normal: ''
                         background_color: 1, 1, 1, 1
                         size_hint_x: 0.10
-                        on_press: wish_viewer.add_wish(title_input.text, author_input.text)
+                        on_press: 
+                            wish_viewer.add_wish(title_input.text, author_input.text)
+                            author_input.text = ""
+                            title_input.text = ""
 
                         Image:
                             source: 'images/add.png'
@@ -1089,7 +1092,9 @@
                             size_hint_x: 0.12
                             # background_normal: ''
                             background_color: 1, 1, 1, 0
-                            on_press: root.parent.ids.books_screen.ids.book_scroll.search(search_input.text)
+                            on_press: 
+                                root.parent.ids.books_screen.ids.book_scroll.search(search_input.text)
+                                search_input.text = ""
 
                             Image:
                                 allow_stretch: True
@@ -1288,7 +1293,9 @@
                     background_normal: ''
                     background_color: 1, 1, 1, 1
                     size_hint_x: 0.10
-                    on_press: shelf_viewer.add_shelf(shelf_title_input.text)
+                    on_press: 
+                        shelf_viewer.add_shelf(shelf_title_input.text)
+                        shelf_title_input.text = ""
 
                     Image:
                         source: 'images/add.png'
@@ -1394,7 +1401,7 @@
                     size_hint_x: 0.10
                     on_press:
                         tag_viewer.add_tag(tag_title_input.text);\
-                        tag_title_input=''
+                        tag_title_input.text = ""
 
                     Image:
                         source: 'images/add.png'
@@ -1786,6 +1793,3 @@
 
 <Label>:
     color: 0, 0, 0
-
-<TextInput>:
-    on_focus: self.text = ""
