@@ -1,6 +1,5 @@
 from sqliteDB import SqliteDB
 from plyer import filechooser
-import plyer
 from shutil import copyfile
 from PIL import Image
 from random import choices
@@ -16,7 +15,6 @@ import string
 from kivy.config import Config
 Config.set('graphics', 'width', '350')
 Config.set('graphics', 'height', '660')
-Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 
 import kivy
 from kivy.uix.button import Button
@@ -178,7 +176,6 @@ class AddImageButton(Button):
     imageDest = StringProperty('')
 
     def add_book_image(self, book_id):
-        print(plyer.utils.platform)
         try:
             path = filechooser.open_file(title="Pick a book cover ...", 
                                          filters=[("*")])[0]
