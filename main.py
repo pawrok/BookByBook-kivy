@@ -1,5 +1,4 @@
 from sqliteDB import SqliteDB
-from plyer import filechooser
 from shutil import copyfile
 from PIL import Image
 from random import choices
@@ -12,22 +11,22 @@ import itertools
 from datetime import datetime
 import string
 
-from kivy.config import Config
-Config.set('graphics', 'width', '350')
-Config.set('graphics', 'height', '660')
-
 import kivy
 from kivy.uix.button import Button
 from kivy.app import App
-from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.recycleview import RecycleView 
+from kivy.uix.popup import Popup
 from kivy.properties import ListProperty, StringProperty, NumericProperty, \
-                            DictProperty
+                            DictProperty, ObjectProperty
 from kivy.uix.screenmanager import Screen
 from kivy.utils import get_color_from_hex
 from kivy.graphics import *
+from kivy.factory import Factory
+
+kivy.require('2.0.0')
 
 DST_DIR = os.getcwd() + "\\book_covers\\"
 
@@ -171,16 +170,34 @@ class FavButton(Button):
             self.is_fav = 0
             self.children[0].source = 'images/heart.png'
 
+class LoadDialog(FloatLayout):
+    cancel = ObjectProperty(None)
+    img_path = StringProperty('')
+    call_add_book_image = ObjectProperty(None)
+
+    def get_path(self, path, filename):
+        self.img_path = os.path.join(path, filename[0])
+
+        self.call_add_book_image(self.img_path)
+
 
 class AddImageButton(Button):
     imageDest = StringProperty('')
+    
+    def dismiss_popup(self):
+        self.popupx.dismiss()
 
-    def add_book_image(self, book_id):
-        try:
-            path = filechooser.open_file(title="Pick a book cover ...", 
-                                         filters=[("*")])[0]
-        except IndexError:
-            return 0
+    def open_file_chooser(self):
+
+        content = LoadDialog(cancel=self.dismiss_popup, call_add_book_image=self.add_book_image)
+        
+        self.popupx = Popup(title="Select image", content=content,
+                            size_hint=(1, 1))
+        self.popupx.open()
+
+
+    def add_book_image(self, path):
+        print(path)
         
         random_name = ''.join(choices(string.ascii_uppercase + string.digits,
                               k=12))
@@ -631,13 +648,12 @@ class BookcaseApp(App):
                 txt_file.write(book['title'] + ' - ' + book['author'] + '\n')
 
 
+Factory.register('LoadDialog', cls=LoadDialog)
+
 if __name__ == '__main__':
     BookcaseApp().run()
 
 
 # TODO:
-# android app ~4h
-
-# more TODO:
 # small visual bugs
 # plots?

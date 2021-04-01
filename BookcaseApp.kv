@@ -216,7 +216,7 @@
                     background_normal: ''
                     background_color: 1, 1, 1, 1
                     size_hint_x: 0.37
-                    on_press: self.add_book_image(root.book_id)
+                    on_press: self.open_file_chooser()
                     Image:
                         allow_stretch: True
                         size: add_image_btn.size
@@ -647,7 +647,7 @@
         background_color: 1, 1, 1, 1
         background_disabled_normal: ''
         background_normal: ''
-        font_size: 15
+        font_size: '20sp'
         foreground_color: 0, 0, 0, 1
         text: root.book_property
         # hint_text: hint_txt
@@ -806,7 +806,7 @@
                         background_color: 1, 1, 1, 1
                         background_disabled_normal: ''
                         background_normal: ''
-                        font_size: 15
+                        font_size: '20sp'
                         foreground_color: 0, 0, 0, 1
                         hint_text: 'Title'
 
@@ -836,7 +836,7 @@
                         background_color: 1, 1, 1, 1
                         background_disabled_normal: ''
                         background_normal: ''
-                        font_size: 15
+                        font_size: '20sp'
                         foreground_color: 0, 0, 0, 1
                         hint_text: 'Author'
 
@@ -1079,7 +1079,7 @@
                             background_active: ''
                             background_disabled_normal: ''
                             background_color: 1, 1, 1, 1
-                            font_size: 15
+                            font_size: '20sp'
                             foreground_color: 0, 0, 0, 1
                             hint_text: 'Search'
 
@@ -1284,7 +1284,7 @@
                     background_color: 1, 1, 1, 1
                     background_disabled_normal: ''
                     background_normal: ''
-                    font_size: 15
+                    font_size: '20sp'
                     foreground_color: 0, 0, 0, 1
                     hint_text: 'Add new shelf...'
 
@@ -1390,7 +1390,7 @@
                     background_color: 1, 1, 1, 1
                     background_disabled_normal: ''
                     background_normal: ''
-                    font_size: 15
+                    font_size: '20sp'
                     foreground_color: 0, 0, 0, 1
                     hint_text: 'Add new tag...'
 
@@ -1793,3 +1793,25 @@
 
 <Label>:
     color: 0, 0, 0
+
+
+<LoadDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserIconView:
+            id: filechooser
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Load"
+                on_release:
+                    root.get_path(filechooser.path, filechooser.selection)
+                    root.cancel()
