@@ -8,5 +8,5 @@ With BookByBook you can:
   - organize books into shelves
   - export list of all your books
   
-![Screenshot](app_screen1.png) ![Screenshot](app_screen2.png) ![Screenshot](app_screen3.png)
+![Screenshot](Screenshots/app_screen1.png) ![Screenshot](Screenshots/app_screen2.png) ![Screenshot](Screenshots/app_screen3.png)
 
